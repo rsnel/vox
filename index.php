@@ -1,0 +1,9 @@
+<?
+require('system.php');
+require('html.php');
+html_start();
+?><pre><?
+print_r($_SERVER);
+?></pre><?
+html_end();
+?>
