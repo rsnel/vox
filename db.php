@@ -15,12 +15,18 @@ function fatal_mysqli($function_name) {
 	fatal($function_name.' ('.mysqli_errno($GLOBALS['db']).'): '.mysqli_error($GLOBALS['db']));
 }
 
+if (!mysqli_set_charset($db, "utf8"))
+	fatal_mysqli('mysqli_set_charset');
+
 function db_vquery($query, $args) {
 	$refs = array();
 
 	if (!($refs[0] = mysqli_prepare($GLOBALS['db'], $query))) fatal_mysqli('msqli_prepare');
 	$refs[1] = '';
 	
+	if (mysqli_stmt_param_count($refs[0]) != count($args))
+		fatal('prepared statement expects '.myqsqli_stmt_param_count($refs[0]).' parameter(s) but gets '.count($args).' parameter(s): '.$query);
+
 	// bind parameters if there are any
 	if (count($args)) {
 		foreach ($args as &$arg) {
@@ -166,4 +172,28 @@ function db_get_useragent_id($useragent_string) {
 	db_direct('UNLOCK TABLES');
 
 	return $id;
+}
+
+function db_dump_result($res, $show_table_names = 0) {
+	echo("<table>\n<tr>");
+
+	while (($finfo = $res->fetch_field())) {
+		echo('<th>');
+		if ($show_table_names) echo($finfo->table.'<br>');
+		echo($finfo->name.'</th>');
+	}
+
+	while (($row = mysqli_fetch_array($res, MYSQLI_NUM))) {
+		echo('<tr>');
+		foreach ($row as $data) {
+			if ($data === NULL) echo('<td><i>NULL</i></td>');
+			else echo('<td>'.$data.'</td>');
+		}
+		echo("<tr>\n");
+	}
+	echo("</table>\n");
+
+	// reset result, so that it can be traversed again
+	mysqli_field_seek($res, 0);
+	mysqli_data_seek($res, 0);
 }
