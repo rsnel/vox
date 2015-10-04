@@ -18,7 +18,8 @@ function fatal_mysqli($function_name) {
 if (!mysqli_set_charset($db, "utf8"))
 	fatal_mysqli('mysqli_set_charset');
 
-function db_vquery($query, $args) {
+// create & execute statement
+function db_vce_stmt($query, $args) {
 	$refs = array();
 
 	if (!($refs[0] = mysqli_prepare($GLOBALS['db'], $query))) fatal_mysqli('msqli_prepare');
@@ -55,8 +56,24 @@ function db_vquery($query, $args) {
 	return $refs[0];
 }
 
-function db_direct($query) {
-	if (!(mysqli_query($GLOBALS['db'], $query))) fatal_mysqli('mysqli_query');
+function db_ce_stmt($query) {
+	// get all arguments, and discard the first
+	$args = func_get_args();
+	array_shift($args);
+
+	return db_vce_stmt($query, $args);
+}
+
+function db_vquery($query, $args) {
+	$stmt = db_vce_stmt($query, $args);
+
+	if (!($res = mysqli_stmt_get_result($stmt)))
+		fatal_mysqli('mysqli_stmt_get_result');
+
+	if (!mysqli_stmt_close($stmt))
+		fatal_mysqli('mysqli_stmt_close');
+
+	return $res;
 }
 
 function db_query($query) {
@@ -65,30 +82,19 @@ function db_query($query) {
 	array_shift($args);
 
 	return db_vquery($query, $args);
+
 }
 
-function db_vsingle_field($query, $args) {
-	$stmt = db_vquery($query.' LIMIT 1', $args);
-
-	$ret = NULL;
-
-	if (!mysqli_stmt_bind_result($stmt, $ret)) fatal_mysqli('mysqli_stmt_bind_result');
-
-	if (mysqli_stmt_fetch($stmt) === FALSE) fatal_mysqli('mysqli_stmt_fetch');
-	
-	if (!mysqli_stmt_close($stmt)) fatal_mysqli('mysqli_stmt_close');
-
-	return $ret;
+function db_direct($query) {
+	if (!(mysqli_query($GLOBALS['db'], $query))) fatal_mysqli('mysqli_query');
 }
 
 function db_vsingle_row($query, $args) {
-	$stmt = db_vquery($query.' LIMIT 1', $args);
+	$res = db_vquery($query.' LIMIT 1', $args);
 
-	$result = mysqli_stmt_get_result($stmt);
+	$row = mysqli_fetch_assoc($res);
 
-	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-	if (!mysqli_stmt_close($stmt)) fatal_mysqli('mysqli_stmt_close');
+	mysqli_free_result($res);
 
 	return $row;
 }
@@ -101,6 +107,17 @@ function db_single_row($query) {
 	return db_vsingle_row($query, $args);
 }
 
+function db_vsingle_field($query, $args) {
+	$row = db_vsingle_row($query, $args);
+
+	if (!is_array($row)) return false; // no row
+
+	if (!count($row)) fatal('first element of result row array not set?!?!?');
+
+	// reset returns the first element of the array
+	return reset($row);
+}
+
 function db_single_field($query) {
 	// get all arguments, and discard the first
 	$args = func_get_args();
@@ -110,7 +127,7 @@ function db_single_field($query) {
 }
 
 function db_vexec($query, $args) {
-	$stmt = db_vquery($query, $args);
+	$stmt = db_vce_stmt($query, $args);
 
 	if (($affected_rows = mysqli_stmt_affected_rows($stmt)) < 0)
 		fatal_mysqli('mysqli_affected_rows');
