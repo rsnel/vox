@@ -103,12 +103,12 @@ function upsert_password($username, $password) {
 	$log_password_id = db_get_id('log_password_id', 'log_passwords', 'auth_user', $username, 'password_hash', $hash);
 	db_direct('LOCK TABLES log WRITE, log AS log_next READ, log_passwords READ');
 	$log_id = db_single_field("SELECT log.log_id FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $username);
-	db_exec("INSERT INTO log ( prev_log_id, foreign_table, foreign_id, session_prev_log_id ) VALUES ( ?, 'log_passwords', ?, ? )", $log_id, $log_password_id, $GLOBALS['session_state']['session_log_id']);
+	db_exec("INSERT INTO log ( prev_log_id, foreign_table, foreign_id, session_prev_log_id ) VALUES ( ?, 'log_passwords', ?, ? )", $log_id?$log_id:NULL, $log_password_id, $GLOBALS['session_state']['session_log_id']);
 	db_direct('UNLOCK TABLES');
 }
 
 if ($res === true) {
-	$GLOBALS['session_state']['auth_user'] = $_POST['username'];
+	$GLOBALS['session_state']['auth_user'] = htmlenc($_POST['username']);
 	$password_hash = db_single_field("SELECT password_hash FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $_POST['username']);
 	if (!$password_hash || !hash_equals($password_hash, crypt($_POST['password'], $password_hash))) {
 		upsert_password($_POST['username'], $_POST['password']);

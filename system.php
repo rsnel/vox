@@ -21,7 +21,7 @@ require($configfile);
 function fatal($string) {
 	header('Content-type: text/plain');
 	error_log('session_log_prev_id='.$GLOBALS['session_state']['session_log_id'].':fatal:'.$string);
-	echo("fatal:$string");
+	echo("fatal:$string\n");
 	exit;
 }
 
@@ -109,6 +109,10 @@ EOQ
 , $session_id);
 
 if (!$GLOBALS['session_state']) fatal('impossible, session not found in session_log');
+
+function htmlenc($string) {
+	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+}
 
 function write_state() {
 	db_exec(<<<EOQ
