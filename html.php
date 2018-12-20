@@ -5,14 +5,15 @@ function html_start() { ?>
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css">
 <title>Test</title>
 </head>
 <body>
-<ul>
-<li>session_log_id=<? echo($GLOBALS['session_state']['session_log_id']) ?></li>
-<li>session_id=<? echo($GLOBALS['session_id']) ?></li>
-<li>auth_user=<? echo(($GLOBALS['session_state']['auth_user'])?$GLOBALS['session_state']['auth_user']:'<i>NULL</i>'); ?></li>
-<li>ppl_id=<? echo(($GLOBALS['session_state']['ppl_id'])?$GLOBALS['session_state']['ppl_id']:'<i>NULL</i>'); ?></li>
+<ul class="debug">
+<li id="session_log_id">session_log_id=<? echo($GLOBALS['session_state']['session_log_id']) ?></li>
+<li id="session_id">session_id=<? echo($GLOBALS['session_id']) ?></li>
+<li id="auth_user">auth_user=<? echo(($GLOBALS['session_state']['auth_user'])?$GLOBALS['session_state']['auth_user']:'<i>NULL</i>'); ?></li>
+<li id="ppl_id">ppl_id=<? echo(($GLOBALS['session_state']['ppl_id'])?$GLOBALS['session_state']['ppl_id']:'<i>NULL</i>'); ?></li>
 </ul>
 <ul>
 <? if ($GLOBALS['session_state']['auth_user']) { ?>

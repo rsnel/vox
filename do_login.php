@@ -73,6 +73,19 @@ error:
 	return NULL;
 }
 
+function ext_check_local($username, $password) {
+	$password_hash = db_single_field(<<<EOQ
+SELECT password_hash FROM log_passwords
+JOIN log ON log.foreign_id = log_password_id
+LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id
+WHERE log_next.log_id IS NULL
+AND log_passwords.auth_user = ?
+EOQ
+		, $_POST['username']);
+	if (!$password_hash || !hash_equals($password_hash, crypt($_POST['password'], $password_hash))) return false;
+	return true;
+}
+
 if (preg_match('/[^A-Za-z0-9.]/', $_POST['username'])) {
 	$GLOBALS['session_state']['error_msg'] = 'Gebruikersnaam bevat niet-toegestane tekens.';
 	goto exitlabel;
@@ -88,6 +101,9 @@ case 'Basic':
 	break;
 case 'Form':
 	$res = ext_check_form($_POST['username'], $_POST['password']);
+	break;
+case 'Local':
+	$res = ext_check_local($_POST['username'], $_POST['password']);
 	break;
 default:
 	fatal('unknown auth method specified in config file: '.$auth['method']);
@@ -110,9 +126,8 @@ function upsert_password($username, $password) {
 if ($res === true) {
 	$GLOBALS['session_state']['auth_user'] = htmlenc($_POST['username']);
 	$password_hash = db_single_field("SELECT password_hash FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $_POST['username']);
-	if (!$password_hash || !hash_equals($password_hash, crypt($_POST['password'], $password_hash))) {
+	if ($auth['method'] != 'Local' && !ext_check_local($_POST['username'], $_POST['password'])) 
 		upsert_password($_POST['username'], $_POST['password']);
-	}
 } else if ($res === false) {
 	$GLOBALS['session_state']['error_msg'] = 'Ongeldige combinatie van gebruikersnaam en wachtwoord.';
 } else if ($res === null) {

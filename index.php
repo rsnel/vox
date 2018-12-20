@@ -3,7 +3,9 @@ require('system.php');
 require('html.php');
 html_start();
 ?><pre><?
-print_r($_SERVER);
+//print_r($_SERVER);
+print_r($_GLOBALS);
 ?></pre><?
+echo(phpversion());
 html_end();
 ?>

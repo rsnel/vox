@@ -2,8 +2,11 @@
 require('system.php');
 require('html.php');
 
+enforce_logged_in();
+
 $res = db_query(<<<EOQ
-SELECT log.log_id, session_log.auth_user, timestamp, log_permissions.auth_user, permission
+SELECT log.log_id, session_log.auth_user, timestamp, log_permissions.auth_user, permission,
+CONCAT('<a href="permission.php?session_guid=$session_guid&amp;log_id=', log.log_id, '">[edit]</a>') edit
 FROM log
 JOIN log_permissions ON log_permissions.log_permissions_id = log.foreign_id
 JOIN session_log USING (session_prev_log_id)
@@ -13,7 +16,7 @@ EOQ
 );
 
 html_start(); ?>
-<a href="permission.php?session_guid=<? echo($session_guid); ?>">insert</a>
+<a href="permission.php?session_guid=<?=$session_guid?>">insert</a>
 <? db_dump_result($res, true);
 html_end();
 ?>

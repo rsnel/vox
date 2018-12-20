@@ -133,4 +133,14 @@ EOQ
 // write session state at shutdown
 register_shutdown_function('write_state');
 
+function enforce_logged_in() {
+	if (isset($GLOBALS['session_state']['auth_user'])) return;
+	fatal("not logged in");
+}
+
+function enforce_permission($permission) {
+	enforce_logged_in();
+	fatal("not implemented");
+}
+
 ?>
