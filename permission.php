@@ -2,6 +2,8 @@
 require('system.php');
 require('html.php');
 
+enforce_permission('PERMISSION');
+
 if (isset($_GET['log_id'])) {
 	$res = db_single_row("SELECT * FROM log JOIN log_permissions ON log_permissions.log_permissions_id = foreign_id WHERE log_id = ? AND foreign_table = 'log_permissions'", $_GET['log_id']);
 	if (!$res) fatal("log_permissions entry with log_id = {$_GET['log_id']} not found");

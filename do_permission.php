@@ -1,6 +1,6 @@
 <?
 require('system.php');
-enforce_logged_in();
+enforce_permission('PERMISSION');
 
 header('Content-type: text/plain');
 

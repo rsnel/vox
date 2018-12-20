@@ -133,14 +133,43 @@ EOQ
 // write session state at shutdown
 register_shutdown_function('write_state');
 
+//validate username
+function check_username($username) {
+	return !preg_match('/[^A-Za-z0-9.]/', $username);
+}
+
+function check_logged_in() {
+	return isset($GLOBALS['session_state']['auth_user']);
+}
+
 function enforce_logged_in() {
-	if (isset($GLOBALS['session_state']['auth_user'])) return;
+	if (check_logged_in()) return;
 	fatal("not logged in");
 }
 
+function check_permission($permission) {
+	if (!check_logged_in()) return false;
+	return db_single_field("SELECT user FROM permissions WHERE permission = ? AND user = ?", $permission, $GLOBALS['session_state']['auth_user']) !== false;
+}
+
 function enforce_permission($permission) {
-	enforce_logged_in();
-	fatal("not implemented");
+	if (check_permission($permission)) return;
+	fatal("permission denied for $permission");
+}
+
+function upsert_password($username, $password) {
+	if (!check_username($usernmae)) fatal("username not allowed");
+	// create new password hash
+	$salt = str_replace('+', '.', base64_encode(openssl_random_pseudo_bytes(12, $strong)));
+	if (!$strong) fatal('no strong pseudoramdomgenerator available to generate password salt');
+	$hash = crypt($password, '$6$rounds=5000$'.$salt.'$');
+
+	// store new password hash in database
+	$log_password_id = db_get_id('log_password_id', 'log_passwords', 'auth_user', $username, 'password_hash', $hash);
+	db_direct('LOCK TABLES log WRITE, log AS log_next READ, log_passwords READ');
+	$log_id = db_single_field("SELECT log.log_id FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $username);
+	db_exec("INSERT INTO log ( prev_log_id, foreign_table, foreign_id, session_prev_log_id ) VALUES ( ?, 'log_passwords', ?, ? )", $log_id?$log_id:NULL, $log_password_id, $GLOBALS['session_state']['session_log_id']);
+	db_direct('UNLOCK TABLES');
 }
 
 ?>
