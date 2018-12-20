@@ -1,0 +1,14 @@
+<?
+$mysqli_info = array (
+	'host' => 'localhost',
+	'username' => 'voxapp',
+	'passwd' => 'ENTERPASSWORDHERE',
+	'dbname' => 'logdb-vox'
+);
+$auth = array (
+	'method' => 'Local',
+	'url'    => '',
+	'prefix' => ''
+);
+$site = 'default';
+?>
