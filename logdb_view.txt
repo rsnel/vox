@@ -1,0 +1,7 @@
+CREATE VIEW BLA AS
+SELECT log.log_id, session_log.auth_user, timestamp, BLA_FIELDS
+FROM log
+JOIN log_BLA ON log_BLA.log_BLA_id = log.foreign_id
+JOIN session_log USING (session_prev_log_id)
+LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id
+WHERE log.foreign_table = 'log_BLA' AND log_next.log_id IS NULL
