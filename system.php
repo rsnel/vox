@@ -147,6 +147,12 @@ function enforce_logged_in() {
 	fatal("not logged in");
 }
 
+function check_staff() {
+	$type = db_single_field("SELECT ppl_type FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
+
+	return ($type == 'personeel');
+}
+
 function check_permission($permission) {
 	if (!check_logged_in()) return false;
 	return db_single_field("SELECT user FROM permissions WHERE permission = ? AND user = ?", $permission, $GLOBALS['session_state']['auth_user']) !== false;
