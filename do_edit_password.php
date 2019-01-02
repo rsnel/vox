@@ -11,19 +11,17 @@ if (!checksetarray($_POST, array('old_password', 'new_password', 'new_password2'
 
 $username = db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id']);
 
-$password_hash = db_single_field(<<<EOQ
-SELECT password_hash FROM log_passwords
-JOIN log ON log.foreign_id = log_password_id
-LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id
-WHERE log_next.log_id IS NULL
-AND log_passwords.auth_user = ?
+if (!check_su()) {
+	$password_hash = db_single_field(<<<EOQ
+SELECT password_hash FROM passwords WHERE auth_user = ?
 EOQ
-, $username);
+	, $username);
 
-if (!$password_hash || !hash_equals($password_hash, crypt($_POST['old_password'], $password_hash))) {
-	$GLOBALS['session_state']['error_msg'] = 'onjuist wachtwoord ingevuld bij "huidig wachtwoord"';
-	header('Location: edit_password.php?session_guid='.$session_guid);
-	exit;
+	if (!$password_hash || !hash_equals($password_hash, crypt($_POST['old_password'], $password_hash))) {
+		$GLOBALS['session_state']['error_msg'] = 'onjuist wachtwoord ingevuld bij "huidig wachtwoord"';
+		header('Location: edit_password.php?session_guid='.$session_guid);
+		exit;
+	}
 }
 
 if ($_POST['new_password'] !== $_POST['new_password2']) {

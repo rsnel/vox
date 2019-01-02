@@ -47,6 +47,7 @@ AND log.foreign_table = 'log_permissions'
 AND log.foreign_id = ?
 EOQ
 		, $log_permissions_id);
+
 	if ($log_id) {
 		$GLOBALS['session_state']['error_msg'] = $auth_user.' heeft al permissie '.$permission;
 	} else {
