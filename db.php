@@ -26,7 +26,7 @@ function db_vce_stmt($query, $args) {
 	$refs[1] = '';
 	
 	if (mysqli_stmt_param_count($refs[0]) != count($args))
-		fatal('prepared statement expects '.myqsqli_stmt_param_count($refs[0]).' parameter(s) but gets '.count($args).' parameter(s): '.$query);
+		fatal('prepared statement expects '.mysqli_stmt_param_count($refs[0]).' parameter(s) but gets '.count($args).' parameter(s): '.$query);
 
 	// bind parameters if there are any
 	if (count($args)) {
