@@ -1,12 +1,14 @@
 <?
 
-function html_start() { ?>
+function html_start() {
+	global $voxdb;
+?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="css/style.css">
-<title>Test</title>
+<title>VOX inschrijfsysteem</title>
 </head>
 <body>
 <ul class="debug">
@@ -14,6 +16,7 @@ function html_start() { ?>
 <li id="session_id">session_id=<? echo($GLOBALS['session_id']) ?></li>
 <li id="auth_user">auth_user=<? echo(($GLOBALS['session_state']['auth_user'])?$GLOBALS['session_state']['auth_user']:'<i>NULL</i>'); ?></li>
 <li id="ppl_id">ppl_id=<? echo(($GLOBALS['session_state']['ppl_id'])?$GLOBALS['session_state']['ppl_id']:'<i>NULL</i>'); ?></li>
+<? if (check_su()) { ?><li>switched user naar <?=db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id']); ?></li><? } ?>
 </ul>
 <ul>
 <? if ($GLOBALS['session_state']['auth_user']) { ?>

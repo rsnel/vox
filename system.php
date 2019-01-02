@@ -147,10 +147,25 @@ function enforce_logged_in() {
 	fatal("not logged in");
 }
 
+function check_su() {
+	global $voxdb;
+	if (!check_logged_in()) return false;
+	//echo("sdlkfjsldkfjsdlkjfslkdjf\n");
+	//echo($GLOBALS['session_state']['ppl_id']);
+	return $GLOBALS['session_state']['ppl_id'] != db_single_field("SELECT ppl_id FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
+}
+
 function check_staff() {
+	global $voxdb;
+	if (!check_logged_in()) return false;
 	$type = db_single_field("SELECT ppl_type FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
 
 	return ($type == 'personeel');
+}
+
+function enforce_staff() {
+	if (check_staff()) return;
+	fatal("only accessible by staff");
 }
 
 function check_permission($permission) {
@@ -163,8 +178,10 @@ function enforce_permission($permission) {
 	fatal("permission denied for $permission");
 }
 
-function upsert_password($username, $password) {
-	if (!check_username($usernmae)) fatal("username not allowed");
+function upsert_password($username, $password, $old_log_id = 0) {
+	if (!check_username($username)) fatal("username not allowed");
+	if ($password != '') {
+
 	// create new password hash
 	$salt = str_replace('+', '.', base64_encode(openssl_random_pseudo_bytes(12, $strong)));
 	if (!$strong) fatal('no strong pseudoramdomgenerator available to generate password salt');
@@ -172,8 +189,19 @@ function upsert_password($username, $password) {
 
 	// store new password hash in database
 	$log_password_id = db_get_id('log_password_id', 'log_passwords', 'auth_user', $username, 'password_hash', $hash);
+	} else {
+		$log_password_id = NULL;
+	}
 	db_direct('LOCK TABLES log WRITE, log AS log_next READ, log_passwords READ');
-	$log_id = db_single_field("SELECT log.log_id FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $username);
+	$log_id = db_single_field("SELECT log.log_id FROM log_passwords JOIN log ON log.foreign_id = log_password_id AND log.foreign_table = 'log_passwords' LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $username);
+	if ($old_log_id === NULL && $log_id) {
+		db_direct('UNLOCK TABLES');
+		fatal("password is al geupdate \$log_id = $log_id \$old_log_id = $old_log_id");
+	}
+	if ($old_log_id > 0 && $log_id != $old_log_id) {
+		db_direct('UNLOCK TABLES');
+		fatal("password is al geupdate \$log_id = $log_id \$old_log_id = $old_log_id");
+	}
 	db_exec("INSERT INTO log ( prev_log_id, foreign_table, foreign_id, session_prev_log_id ) VALUES ( ?, 'log_passwords', ?, ? )", $log_id?$log_id:NULL, $log_password_id, $GLOBALS['session_state']['session_log_id']);
 	db_direct('UNLOCK TABLES');
 }
