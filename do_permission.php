@@ -1,6 +1,6 @@
 <?
 require('system.php');
-enforce_permission('PERMISSION');
+enforce_permission('PERMISSIONS');
 
 header('Content-type: text/plain');
 
