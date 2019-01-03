@@ -144,18 +144,30 @@ function check_logged_in() {
 
 function enforce_logged_in() {
 	if (check_logged_in()) return;
-	fatal("not logged in");
+	header("Location: index.php?session_guid={$GLOBALS['session_guid']}");
+	exit;
+	//fatal("not logged in");
 }
 
 function check_su() {
 	global $voxdb;
 	if (!check_logged_in()) return false;
-	//echo("sdlkfjsldkfjsdlkjfslkdjf\n");
-	//echo($GLOBALS['session_state']['ppl_id']);
 	return $GLOBALS['session_state']['ppl_id'] != db_single_field("SELECT ppl_id FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
 }
 
 function check_staff() {
+	global $voxdb;
+	if (!check_logged_in()) return false;
+	$type = db_single_field("SELECT ppl_type FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id']);
+
+	return ($type == 'personeel');
+}
+
+function check_student() {
+	return !check_staff();
+}
+
+function check_staff_rights() {
 	global $voxdb;
 	if (!check_logged_in()) return false;
 	$type = db_single_field("SELECT ppl_type FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
@@ -164,7 +176,19 @@ function check_staff() {
 }
 
 function enforce_staff() {
+	enforce_logged_in();
 	if (check_staff()) return;
+	fatal("only accessible by staff");
+}
+
+function enforce_student() {
+	if (check_student()) return;
+	fatal("only accessible by students");
+}
+
+function enforce_staff_rights() {
+	enforce_logged_in();
+	if (check_staff_rights()) return;
 	fatal("only accessible by staff");
 }
 
@@ -174,6 +198,7 @@ function check_permission($permission) {
 }
 
 function enforce_permission($permission) {
+	enforce_logged_in();
 	if (check_permission($permission)) return;
 	fatal("permission denied for $permission");
 }

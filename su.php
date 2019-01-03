@@ -2,7 +2,7 @@
 require('system.php');
 require('html.php');
 
-enforce_staff();
+enforce_staff_rights();
 
 html_start(); ?>
 <form action="do_su.php?session_guid=<? echo($session_guid); ?>" method="POST" accept-charset="UTF-8">
