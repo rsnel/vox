@@ -25,6 +25,7 @@ html_start(); ?>
 <? db_dump_result($res, false); ?>
 <input type="submit" value="Genereer wachtwoorden">
 </form>
+<!--
 <h4>Wachtwoorden wijzigen/verwijderen</h4>
 
 <form action="do_account.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
@@ -32,5 +33,6 @@ html_start(); ?>
 <input type="text" placeholder="password" name="password">
 <input type="submit" value="Upsert">
 </form>
+-->
 <?  html_end();
 ?>

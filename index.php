@@ -152,7 +152,7 @@ EOJ;
 EOS;
 		$join .= <<<EOJ
 LEFT JOIN (
-	SELECT avail.ppl_id, GROUP_CONCAT(DISTINCT subj_abbrev) subj_ids, IFNULL(COUNT(DISTINCT claim.ppl_id) >= MIN(avail.capacity), avail.capacity) full, IFNULL(BIT_OR(claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}), 0) selected, IFNULL(locked, 0) locked
+	SELECT avail.ppl_id, GROUP_CONCAT(DISTINCT subj_abbrev ORDER BY subj_abbrev) subj_ids, IFNULL(COUNT(DISTINCT claim.ppl_id) >= MIN(avail.capacity), avail.capacity) full, IFNULL(BIT_OR(claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}), 0) selected, IFNULL(locked, 0) locked
 	FROM $voxdb.avail
 	JOIN $voxdb.subj USING (subj_id)
 	LEFT JOIN $voxdb.claim USING (avail_id)
