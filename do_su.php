@@ -16,7 +16,7 @@ $ppl = db_single_row("SELECT ppl_id, ppl_type, ppl_login FROM $voxdb.ppl WHERE p
 
 if (!is_array($ppl)) {
 	$GLOBALS['session_state']['error_msg'] = 'gebruiker '.$username.' onbekend, vraag admin hem of haar toe te voegen';
-	header('Location: su.php?session_guid='.$session_guid);
+	header('Location: index.php?session_guid='.$session_guid);
 	exit;
 }
 echo("new type={$ppl['ppl_type']}");

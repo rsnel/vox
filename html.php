@@ -21,7 +21,9 @@ function html_start() {
 <ul>
 <? if (check_logged_in()) { ?>
 <li><form method="POST" action="do_logout.php?session_guid=<? echo($GLOBALS['session_guid']); ?>">ingelogd als <?=$GLOBALS['session_state']['auth_user']?> <input type="submit" value="logout"></form></li>
-<? if (check_su()) { ?><li><form method="POST" action="do_su.php?session_guid=<? echo($GLOBALS['session_guid']); ?>">su identiteit <?=db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id'])?><input type="hidden" name="username" value="<?=$GLOBALS['session_state']['auth_user']?>"><input type="submit" value="opheffen"></form></li><? } else if (check_staff() && !preg_match("/su.php/", $_SERVER['PHP_SELF'])) { ?><li><a href="su.php?session_guid=<?=$GLOBALS['session_guid']?>">switch user</a></li><? }
+<? if (check_su()) { ?><li><form method="POST" action="do_su.php?session_guid=<? echo($GLOBALS['session_guid']); ?>">su identiteit <?=db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id'])?><input type="hidden" name="username" value="<?=$GLOBALS['session_state']['auth_user']?>"><input type="submit" value="opheffen"></form></li>
+<? } else if (check_staff()) { ?><li><form method="POST" action="do_su.php?session_guid=<? echo($GLOBALS['session_guid']); ?>"><input type="text" name="username" value=""><input type="submit" value="switch user"></form>
+</li><? }
 if (check_staff() && !preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 ?>
 <li><a href="edit_password.php?session_guid=<?=$GLOBALS['session_guid']?>">wachtwoord wijzigen</a></li>
