@@ -89,6 +89,26 @@ function db_direct($query) {
 	if (!(mysqli_query($GLOBALS['db'], $query))) fatal_mysqli('mysqli_query');
 }
 
+function db_vall_assoc_rekey($query, $args) {
+	$res = db_vquery($query, $args);
+
+	$out = array();
+	while ($row = mysqli_fetch_assoc($res)) {
+		$key = array_shift($row);
+		$out[$key] = $row;
+	}
+
+	return $out;
+}
+
+function db_all_assoc_rekey($query) {
+	// get all arguments, and discard the first
+	$args = func_get_args();
+	array_shift($args);
+
+	return db_vall_assoc_rekey($query, $args);
+}
+
 function db_vsingle_row($query, $args) {
 	$res = db_vquery($query.' LIMIT 1', $args);
 

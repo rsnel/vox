@@ -15,7 +15,9 @@ while ($assoc = mysqli_fetch_assoc($weken)) {
  */
 
 if (!check_logged_in()) {
-	html_start();
+	html_start(); ?>
+Wachtwoord vergeten? Zoek een docent als je leerling bent en zoek een beheerder als je docent bent.
+<?
 	html_end();
 	exit;
 }
@@ -32,10 +34,21 @@ EOQ
 	$select = '';
 	$join = '';
 
+	$select2 = '';
+	$join2 = '';
+
 	while ($row = mysqli_fetch_assoc($uren)) {
 		$du = $row['time_day'].$row['time_hour'];
+		$select2 .= <<<EOS
+, CONCAT('<input type="text" size="2" name="time-{$row['time_id']}" value="', IFNULL(MIN(a$du.capacity), 25), '">') $du
+EOS;
+		$join2 .= <<<EOJ
+LEFT JOIN $voxdb.avail AS a$du ON a$du.time_id = {$row['time_id']} AND a$du.ppl_id = {$GLOBALS['session_state']['ppl_id']}
+
+EOJ;
 		$select .= <<<EOS
-, IF(c$du.avail_id IS NULL, CONCAT('<input type="checkbox" name="time-{$row['time_id']}-', subj.subj_id, '" value="1"', IF(a$du.avail_id IS NULL, '', ' checked'),'>'), 'X') $du
+, IF(c$du.avail_id IS NULL, CONCAT('<input class="avail" id="time-{$row['time_id']}-', subj.subj_id, '" type="checkbox" name="time-{$row['time_id']}-', subj.subj_id, '" value="1"', IF(a$du.avail_id IS NULL, '', ' checked'),'>'), CONCAT('<input type="checkbox" checked disabled><input type="hidden" name="time-{$row['time_id']}-', subj.subj_id, '" value="1">')) $du
+
 EOS;
 		$join .= <<<EOJ
 LEFT JOIN $voxdb.avail AS a$du ON a$du.time_id = {$row['time_id']} AND a$du.ppl_id = {$GLOBALS['session_state']['ppl_id']} AND a$du.subj_id = subj.subj_id
@@ -48,6 +61,11 @@ EOJ;
 	}
 
 	$rooster = db_query(<<<EOQ
+SELECT '<b>cap.</b>' vak$select2
+FROM $voxdb.time
+$join2
+WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = '$default_week'
+UNION
 SELECT subj_abbrev vak$select
 FROM $voxdb.subj
 $join
@@ -65,8 +83,13 @@ EOQ
 <input type="hidden" name="ppl_id" value="<?=$GLOBALS['session_state']['ppl_id']?>">
 <input type="submit" value="Opslaan">
 </form>
+
+<p>De maximale capaciteit van een docent staat standaard op 25. Als de maximale capaciteit is bereikt, dan kunnen leerlingen zich niet (meer) inschrijven. Docenten kunnen leerlingen nog wel inschrijven. Als het de bedoeling is dat leerlingen zichzelf niet kunnen inschrijven, dan dient de capaciteit op 0 te staan.
+
+<p>Een disabled checkbox (<input type="checkbox" checked disabled>) betekent dat er leeringen bij jou zijn ingeschreven voor het betreffede vak. Het is pas mogelijk om de beschikbaarheid van de docent uit te zetten als de ingeschreven leerlingen zijn uitgeschreven.
+
 <? 
-html_end();
+	html_end();
 }
 
 function do_student() {
@@ -78,22 +101,69 @@ SELECT * FROM $voxdb.time WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0'))
 EOQ
 	, $default_week);
 
+	$not_su = 'TRUE';
+	if (check_su()) $not_su = 'FALSE';
+
 	$select = '';
 	$join = '';
 	$where = 'FALSE';
 
+	$select2 = '';
+	$join2 = '';
+
+	$select3 = '';
+
 	while ($row = mysqli_fetch_assoc($uren)) {
 		$du = $row['time_day'].$row['time_hour'];
+		$select3 .= <<<EOS
+, CONCAT('<input type="radio"',IF((SELECT claim_id FROM $voxdb.claim JOIN $voxdb.avail USING (avail_id) WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']} LIMIT 1) IS NULL, ' checked', '') ,' name="time-{$row['time_id']}" value="ppl_id-0">') $du
+EOS;
+		if (!check_su()) {
+			$select2 .= <<<EOS
+, CONCAT('<input type="checkbox" disabled', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)), ' checked', ''), '>', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)), '<input type="hidden" name="lock[]" value="{$row['time_id']}">', '')) $du
+EOS;
+		} else {
+			$select2 .= <<<EOS
+, CONCAT('<input type="checkbox"', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)), ' checked', ''), ' name="lock[]" value="{$row['time_id']}">') $du
+EOS;
+
+		}
+
+		$join2 .= <<<EOJ
+LEFT JOIN (
+	SELECT time_id, claim_locked
+	FROM $voxdb.claim
+	JOIN $voxdb.avail USING (avail_id)
+	WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}
+) AS a$du USING (time_id)
+
+EOJ;
 		$select .= <<<EOS
-, IFNULL(CONCAT('<input type="radio" name="ppl_id-', a$du.ppl_id, '"> ', a$du.subj_ids), '') $du
+, IFNULL(
+	CONCAT(
+		IF((a$du.locked OR (a$du.full AND NOT a$du.selected)) AND $not_su,
+			CONCAT('<input type="radio" disabled',
+				IF(a$du.selected, ' checked', ''),
+				'>', IF(a$du.selected,
+					CONCAT('<input type="hidden" name="time-{$row['time_id']}" value="ppl_id-', a$du.ppl_id, '">'), '')), CONCAT('<input type="radio" name="time-{$row['time_id']}" value="ppl_id-', a$du.ppl_id, '"', IF(a$du.selected, ' checked', ''), '> ')), ' ', IF(a$du.full AND NOT a$du.selected, '<del>', ''), a$du.subj_ids, IF(a$du.full AND NOT a$du.selected, '</del>', '')
+-- , ' ', a$du.full, ' ', a$du.selected, ' ', a$du.locked
+), '') $du
+
 EOS;
 		$join .= <<<EOJ
 LEFT JOIN (
-	SELECT ppl_id, GROUP_CONCAT(subj_abbrev) subj_ids
+	SELECT avail.ppl_id, GROUP_CONCAT(DISTINCT subj_abbrev) subj_ids, IFNULL(COUNT(DISTINCT claim.ppl_id) >= MIN(avail.capacity), avail.capacity) full, IFNULL(BIT_OR(claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}), 0) selected, IFNULL(locked, 0) locked
 	FROM $voxdb.avail
 	JOIN $voxdb.subj USING (subj_id)
+	LEFT JOIN $voxdb.claim USING (avail_id)
+	LEFT JOIN (
+		SELECT time_id, IFNULL(BIT_OR(claim_locked), 0) locked
+		FROM $voxdb.claim
+		JOIN $voxdb.avail USING (avail_id)
+		GROUP BY time_id
+	) AS locked USING (time_id)
 	WHERE time_id = {$row['time_id']}
-	GROUP BY ppl_id
+	GROUP BY avail.ppl_id
 ) AS a$du USING (ppl_id)
 
 EOJ;
@@ -103,17 +173,30 @@ EOW;
 	}
 	
 	$rooster = db_query(<<<EOQ
+SELECT '<b>locked</b>' AS `docent`$select2
+FROM $voxdb.time
+$join2
+WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = '$default_week'
+UNION
+SELECT '<i>geen</i>' AS `docent`$select3
+UNION
 SELECT ppl_login docent$select
 FROM $voxdb.ppl
 $join
 WHERE ppl_type = 'personeel' AND ( $where )
 EOQ
 );
-	html_start();
-	echo($default_week);
-	?><div class="tablemarkup"><?
-	db_dump_result($rooster);
-	?></div><?
+	html_start();?>
+<p>Keuzes leerling <?= db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']}")?> in <?=$default_week?>.
+<form method="POST" accept-charset="UTF-8" action="do_claim.php?session_guid=<?=$session_guid?>">
+<div class="tablemarkup"><?  db_dump_result($rooster); ?></div>
+<input type="hidden" name="week" value="<?=$default_week?>">
+<input type="hidden" name="ppl_id" value="<?=$GLOBALS['session_state']['ppl_id']?>">
+<input type="submit" value="Opslaan">
+</form>
+<p>
+Als de vakken zijn <del>doorgestreept</del> dan zit de docent vol. Als het vakje bij <b>locked</b> aan staat, dan kun je in de betreffende kolom niets wijzigen. Neem contact op met een docent als er iets niet klopt.
+	<?
 	html_end();
 }
 
