@@ -43,6 +43,9 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 <? if (check_permission('CONFIGS') && !preg_match("/(configs.php|edit_config.php)/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="configs.php?session_guid=<?=$GLOBALS['session_guid']?>">configbeheer</a></li>
 <? } ?>
+<? if (check_permission('TAGBEHEER') && !preg_match("/tags.php/", $_SERVER['PHP_SELF'])) { ?>
+<li><a href="tags.php?session_guid=<?=$GLOBALS['session_guid']?>">tagbeheer</a></li>
+<? } ?>
 </ul>
 <? if ($GLOBALS['session_state']['success_msg']) { ?>
 <div id="errormsg"><span class="textual">success:</span>

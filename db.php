@@ -95,7 +95,9 @@ function db_vall_assoc_rekey($query, $args) {
 	$out = array();
 	while ($row = mysqli_fetch_assoc($res)) {
 		$key = array_shift($row);
-		$out[$key] = $row;
+		if (count($row) == 1) {
+			$out[$key] = array_shift($row);
+		} else $out[$key] = $row;
 	}
 
 	return $out;

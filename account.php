@@ -13,6 +13,7 @@ SELECT ppl_login login,
 		' value="', ppl_id, '-', IFNULL(log_id, 'NULL'),
 		'" name="pplpwlog[]">') `genereer wachtwoord`
 FROM $voxdb.ppl LEFT JOIN passwords ON passwords.auth_user = ppl_login
+ORDER BY ppl_type, ppl_surname, ppl_forename, ppl_prefix
 EOQ
 );
 
