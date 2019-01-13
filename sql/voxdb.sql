@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 21, 2018 at 07:02 AM
--- Server version: 10.1.37-MariaDB-0+deb9u1
--- PHP Version: 7.0.33-0+deb9u1
+-- Generation Time: Jan 13, 2019 at 04:04 PM
+-- Server version: 10.1.26-MariaDB-0+deb9u1
+-- PHP Version: 5.6.33-0+deb8u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `vox`
+-- Database: `voxdb`
 --
 
 -- --------------------------------------------------------
@@ -30,7 +30,8 @@ CREATE TABLE `avail` (
   `avail_id` int(11) NOT NULL,
   `time_id` int(11) NOT NULL,
   `ppl_id` int(11) NOT NULL,
-  `subj_id` int(11) NOT NULL
+  `subj_id` int(11) NOT NULL,
+  `capacity` int(11) NOT NULL DEFAULT '25'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -68,11 +69,9 @@ CREATE TABLE `ppl` (
 --
 
 CREATE TABLE `ppl2tag` (
-  `ppl2tag` int(11) NOT NULL,
+  `ppl2tag_id` int(11) NOT NULL,
   `ppl_id` int(11) NOT NULL,
-  `tag_id` int(11) NOT NULL,
-  `tag_start_date` datetime NOT NULL,
-  `tag_end_date` datetime NOT NULL
+  `tag_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -95,8 +94,9 @@ CREATE TABLE `subj` (
 
 CREATE TABLE `tag` (
   `tag_id` int(11) NOT NULL,
-  `tag_name` int(11) NOT NULL,
-  `tag_type` enum('KLAS','KEUZEVAK','LEERJAAR','NIVEAU') COLLATE utf8mb4_unicode_ci NOT NULL
+  `tag_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag_type` enum('ROOSTERLLN','LEERJAAR','NIVEAU') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag_order` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -111,6 +111,21 @@ CREATE TABLE `time` (
   `time_week` int(11) NOT NULL,
   `time_day` enum('ma','di','wo','do','vr','za','zo') COLLATE utf8mb4_unicode_ci NOT NULL,
   `time_hour` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `weken`
+--
+
+CREATE TABLE `weken` (
+  `week_id` int(11) NOT NULL,
+  `time_year` int(11) NOT NULL,
+  `time_week` int(11) NOT NULL,
+  `status_doc` int(11) NOT NULL DEFAULT '0',
+  `status_lln` int(11) NOT NULL DEFAULT '0',
+  `rooster_zichtbaar` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -145,7 +160,7 @@ ALTER TABLE `ppl`
 -- Indexes for table `ppl2tag`
 --
 ALTER TABLE `ppl2tag`
-  ADD PRIMARY KEY (`ppl2tag`),
+  ADD PRIMARY KEY (`ppl2tag_id`),
   ADD KEY `ppl_id` (`ppl_id`),
   ADD KEY `tag_id` (`tag_id`);
 
@@ -167,7 +182,15 @@ ALTER TABLE `tag`
 -- Indexes for table `time`
 --
 ALTER TABLE `time`
-  ADD PRIMARY KEY (`time_id`);
+  ADD PRIMARY KEY (`time_id`),
+  ADD KEY `time_year` (`time_year`,`time_week`);
+
+--
+-- Indexes for table `weken`
+--
+ALTER TABLE `weken`
+  ADD PRIMARY KEY (`week_id`),
+  ADD UNIQUE KEY `year` (`time_year`,`time_week`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -177,37 +200,42 @@ ALTER TABLE `time`
 -- AUTO_INCREMENT for table `avail`
 --
 ALTER TABLE `avail`
-  MODIFY `avail_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `avail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2458;
 --
 -- AUTO_INCREMENT for table `claim`
 --
 ALTER TABLE `claim`
-  MODIFY `claim_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `claim_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=195;
 --
 -- AUTO_INCREMENT for table `ppl`
 --
 ALTER TABLE `ppl`
-  MODIFY `ppl_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ppl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 --
 -- AUTO_INCREMENT for table `ppl2tag`
 --
 ALTER TABLE `ppl2tag`
-  MODIFY `ppl2tag` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ppl2tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 --
 -- AUTO_INCREMENT for table `subj`
 --
 ALTER TABLE `subj`
-  MODIFY `subj_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `subj_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `tag`
 --
 ALTER TABLE `tag`
-  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `time`
 --
 ALTER TABLE `time`
-  MODIFY `time_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `time_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+--
+-- AUTO_INCREMENT for table `weken`
+--
+ALTER TABLE `weken`
+  MODIFY `week_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
 -- Constraints for dumped tables
 --
@@ -226,6 +254,19 @@ ALTER TABLE `avail`
 ALTER TABLE `claim`
   ADD CONSTRAINT `claim_ibfk_1` FOREIGN KEY (`ppl_id`) REFERENCES `ppl` (`ppl_id`) ON UPDATE NO ACTION,
   ADD CONSTRAINT `claim_ibfk_2` FOREIGN KEY (`avail_id`) REFERENCES `avail` (`avail_id`);
+
+--
+-- Constraints for table `ppl2tag`
+--
+ALTER TABLE `ppl2tag`
+  ADD CONSTRAINT `ppl2tag_ibfk_1` FOREIGN KEY (`ppl_id`) REFERENCES `ppl` (`ppl_id`),
+  ADD CONSTRAINT `ppl2tag_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`tag_id`);
+
+--
+-- Constraints for table `time`
+--
+ALTER TABLE `time`
+  ADD CONSTRAINT `time_ibfk_1` FOREIGN KEY (`time_year`,`time_week`) REFERENCES `weken` (`time_year`, `time_week`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

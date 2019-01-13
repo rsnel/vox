@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 20, 2018 at 12:30 PM
+-- Generation Time: Jan 13, 2019 at 04:04 PM
 -- Server version: 10.1.26-MariaDB-0+deb9u1
 -- PHP Version: 5.6.33-0+deb8u1
 
@@ -30,8 +30,8 @@ CREATE TABLE `config` (
 `log_id` int(11)
 ,`log_auth_user` varchar(64)
 ,`timestamp` timestamp
-,`key` varchar(32)
-,`value` mediumtext
+,`config_key` varchar(32)
+,`config_value` mediumtext
 );
 
 -- --------------------------------------------------------
@@ -56,8 +56,8 @@ CREATE TABLE `log` (
 
 CREATE TABLE `log_config` (
   `log_config_id` int(11) NOT NULL,
-  `key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `config_key` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `config_value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_config_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -176,7 +176,7 @@ CREATE TABLE `useragents` (
 --
 DROP TABLE IF EXISTS `config`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `config`  AS  select `log`.`log_id` AS `log_id`,`session_log`.`auth_user` AS `log_auth_user`,`session_log`.`timestamp` AS `timestamp`,`log_config`.`key` AS `key`,`log_config`.`value` AS `value` from (((`log` join `log_config` on((`log_config`.`log_config_id` = `log`.`foreign_id`))) join `session_log` on((`log`.`session_prev_log_id` = `session_log`.`session_prev_log_id`))) left join `log` `log_next` on((`log_next`.`prev_log_id` = `log`.`log_id`))) where ((`log`.`foreign_table` = 'log_config') and isnull(`log_next`.`log_id`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `config`  AS  select `log`.`log_id` AS `log_id`,`session_log`.`auth_user` AS `log_auth_user`,`session_log`.`timestamp` AS `timestamp`,`log_config`.`config_key` AS `config_key`,`log_config`.`config_value` AS `config_value` from (((`log` join `log_config` on((`log_config`.`log_config_id` = `log`.`foreign_id`))) join `session_log` on((`log`.`session_prev_log_id` = `session_log`.`session_prev_log_id`))) left join `log` `log_next` on((`log_next`.`prev_log_id` = `log`.`log_id`))) where ((`log`.`foreign_table` = 'log_config') and isnull(`log_next`.`log_id`)) ;
 
 -- --------------------------------------------------------
 
@@ -263,27 +263,27 @@ ALTER TABLE `useragents`
 -- AUTO_INCREMENT for table `log`
 --
 ALTER TABLE `log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
 --
 -- AUTO_INCREMENT for table `log_config`
 --
 ALTER TABLE `log_config`
-  MODIFY `log_config_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_config_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `log_passwords`
 --
 ALTER TABLE `log_passwords`
-  MODIFY `log_password_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `log_password_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
 --
 -- AUTO_INCREMENT for table `log_permissions`
 --
 ALTER TABLE `log_permissions`
-  MODIFY `log_permissions_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `log_permissions_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 --
 -- AUTO_INCREMENT for table `session_configs`
 --
@@ -293,12 +293,12 @@ ALTER TABLE `session_configs`
 -- AUTO_INCREMENT for table `session_log`
 --
 ALTER TABLE `session_log`
-  MODIFY `session_log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=545;
+  MODIFY `session_log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3930;
 --
 -- AUTO_INCREMENT for table `useragents`
 --
 ALTER TABLE `useragents`
-  MODIFY `useragent_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `useragent_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
