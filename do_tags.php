@@ -6,10 +6,13 @@ header('Content-type: text/plain');
 
 $res = db_all_assoc_rekey(<<<EOQ
 SELECT CONCAT(ppl_id, '-', tag_id), ppl2tag_id FROM $voxdb.ppl
-JOIN $voxdb.tag ON tag.tag_type = 'ROOSTERLLN'
+JOIN $voxdb.tag ON tag.tag_type = ?
 LEFT JOIN $voxdb.ppl2tag USING (ppl_id, tag_id)
 EOQ
-);
+, $_POST['type']);
+
+if (!isset($_POST['ppl2tag'])) $_POST['ppl2tag'] = array();
+else if (!is_array($_POST['ppl2tag'])) fatal("impossible");
 
 //print_r($_POST);
 
@@ -25,6 +28,6 @@ foreach ($res as $ppltag => $coupled) {
 	}
 }
 
-header('Location: tags.php?session_guid='.$session_guid);
+header('Location: tags.php?session_guid='.$session_guid.'&type='.$_POST['type']);
 
 ?>

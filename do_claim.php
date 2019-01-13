@@ -8,22 +8,25 @@ print_r($_POST);
 
 if ($GLOBALS['session_state']['ppl_id'] != $_POST['ppl_id']) fatal("impersonator");
 
+if (!db_single_field("SELECT status_lln FROM $voxdb.weken WHERE week_id = ?", $_POST['week_id'])) fatal("permission denied");
+
 $uren = db_query(<<<EOQ
 SELECT *
-FROM $voxdb.time
-WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?
+FROM $voxdb.time JOIN $voxdb.weken USING (time_year, time_week)
+WHERE week_id = ?
 EOQ
-        , $_POST['week']);
+        , $_POST['week_id']);
 
 $ins = db_all_assoc_rekey(<<<EOQ
 SELECT CONCAT('time-', time_id), avail.ppl_id, BIT_OR(claim_locked) locked
 FROM $voxdb.claim
 JOIN $voxdb.avail USING (avail_id)
 JOIN $voxdb.time USING (time_id)
-WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ? AND claim.ppl_id = ?
+JOIN $voxdb.weken USING (time_year, time_week)
+WHERE week_id = ? AND claim.ppl_id = ?
 GROUP BY time_id, avail.ppl_id
 EOQ
-, $_POST['week'], $_POST['ppl_id']);
+, $_POST['week_id'], $_POST['ppl_id']);
 
 print_r($ins);
 
@@ -87,6 +90,6 @@ while ($row = mysqli_fetch_assoc($uren)) {
 
 $GLOBALS['session_state']['success_msg'] = 'Keuzes opgeslagen';
 
-header('Location: index.php?session_guid='.$session_guid.'&week='.$_POST['week']);
+header('Location: index.php?session_guid='.$session_guid.'&week_id='.$_POST['week_id']);
 
 ?>

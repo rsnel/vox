@@ -9,7 +9,9 @@ print_r($_POST);
 
 //exit;
 
-$stuff = db_query("SELECT CONCAT('time-', time.time_id, '-', subj.subj_id) time, time.time_id, subj.subj_id, avail.avail_id FROM $voxdb.time JOIN $voxdb.subj LEFT JOIN $voxdb.avail ON time.time_id = avail.time_id AND subj.subj_id = avail.subj_id AND avail.ppl_id = ? WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?", $_POST['ppl_id'], $_POST['week']);
+if (!db_single_field("SELECT status_doc FROM $voxdb.weken WHERE week_id = ?", $_POST['week_id'])) fatal("permission denied");
+
+$stuff = db_query("SELECT CONCAT('time-', time.time_id, '-', subj.subj_id) time, time.time_id, subj.subj_id, avail.avail_id FROM $voxdb.weken JOIN $voxdb.time USING (time_week, time_year) JOIN $voxdb.subj LEFT JOIN $voxdb.avail ON time.time_id = avail.time_id AND subj.subj_id = avail.subj_id AND avail.ppl_id = ? WHERE week_id = ?", $_POST['ppl_id'], $_POST['week_id']);
 
 while ($row = mysqli_fetch_assoc($stuff)) {
 	//print_r($row);
@@ -17,7 +19,7 @@ while ($row = mysqli_fetch_assoc($stuff)) {
 	else if (!$row['avail_id'] && isset($_POST[$row['time']])) db_exec("INSERT INTO $voxdb.avail ( ppl_id, subj_id, time_id ) VALUES ( ?, ?, ? )", $_POST['ppl_id'], $row['subj_id'], $row['time_id']);
 }
 
-$stuff2 = db_query("SELECT avail_id, time_id, capacity FROM $voxdb.avail JOIN $voxdb.time USING (time_id) WHERE avail.ppl_id = ? AND CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?", $_POST['ppl_id'], $_POST['week']);
+$stuff2 = db_query("SELECT avail_id, time_id, capacity FROM $voxdb.avail JOIN $voxdb.time USING (time_id) JOIN $voxdb.weken USING (time_year, time_week) WHERE avail.ppl_id = ? AND week_id = ?", $_POST['ppl_id'], $_POST['week_id']);
 
 while ($row = mysqli_fetch_assoc($stuff2)) {
 	if (!isset($_POST['time-'.$row['time_id']])) fatal("impossible error!");
@@ -28,7 +30,7 @@ while ($row = mysqli_fetch_assoc($stuff2)) {
 
 $GLOBALS['session_state']['success_msg'] = 'Beschikbaarheid opgeslagen';
 
-header('Location: index.php?session_guid='.$session_guid.'&week='.$_POST['week']);
+header('Location: index.php?session_guid='.$session_guid.'&week_id='.$_POST['week_id']);
 
 
 ?>

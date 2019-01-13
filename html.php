@@ -31,6 +31,12 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 <li><form method="POST" action="do_login.php?session_guid=<? echo($GLOBALS['session_guid']); ?>"><input type="text" placeholder="gebruikersnaam" name="username"><input type="password" placeholder="wachtwoord" name="password"><input type="submit" value="login"></form></li>
 <? } ?>
 <!--<li><form method="POST" action="do_new_tab.php?session_guid=<? echo($GLOBALS['session_guid']); ?>&amp;session_log_id=<? echo($GLOBALS['session_state']['session_log_id']); ?>" target="_blank"><input type="submit" value="new tab"></form></li>-->
+<? if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
+<li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
+<? } ?>
+<? if (check_staff() && !preg_match("/niet_ingeschreven.php/", $_SERVER['PHP_SELF'])) { ?>
+<li><a href="niet_ingeschreven.php?session_guid=<?=$GLOBALS['session_guid']?>">niet ingeschreven</a></li>
+<? } ?>
 <? if (!preg_match("/index.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="index.php?session_guid=<?=$GLOBALS['session_guid']?>">home</a></li>
 <? } ?>
@@ -46,7 +52,7 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 <? if (check_permission('TAGBEHEER') && !preg_match("/tags.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="tags.php?session_guid=<?=$GLOBALS['session_guid']?>">tagbeheer</a></li>
 <? } ?>
-<? if (check_permission('WEEKBEHEER') && !preg_match("/weken.php/", $_SERVER['PHP_SELF'])) { ?>
+<? if (check_permission('WEEKBEHEER') && !preg_match("/weken.php/", $_SERVER['PHP_SELF']) && !preg_match("/week_ops.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="weken.php?session_guid=<?=$GLOBALS['session_guid']?>">weekbeheer</a></li>
 <? } ?>
 </ul>

@@ -24,7 +24,27 @@ Wachtwoord vergeten? Zoek een docent als je leerling bent en zoek een beheerder 
 
 function do_staff() {
 	global $voxdb, $session_guid;
-	$default_week = db_single_field("SELECT config_value FROM config WHERE config_key = 'DEFAULT_WEEK_DOC'");
+
+	if (isset($_GET['week_id'])) {
+		$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE week_id = ? AND status_doc = 1", $_GET['week_id']);
+		if (!$week_id) fatal("week niet toegankelijk voor docenten");
+	} else {
+		$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE status_doc = 1 ORDER BY time_year DESC, time_week DESC");
+	}
+
+	if (!$week_id) {
+		html_start(); ?>
+Geen lesweken toegankelijk voor docenten op dit moment.
+<? 		html_end();
+	       	return;
+	}	
+
+	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
+
+	$weken = db_single_field(<<<EOQ
+SELECT CONCAT('<select onchange="this.form.submit()" name="week_id">', GROUP_CONCAT(CONCAT('<option', IF(week_id = $week_id, ' selected', ''), ' value="', week_id, '">', time_year, 'wk', LPAD(time_week, 2, '0'), '</option>')), '</select>') FROM $voxdb.weken WHERE status_doc
+EOQ
+);
 
 	$uren = db_query(<<<EOQ
 SELECT * FROM $voxdb.time WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?
@@ -75,11 +95,14 @@ EOQ
 	html_start();
 
 ?>
-<p>Beschikbaarheid docent <?= db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']}")?> in <?=$default_week?>.
+<form method="GET" accept-charset="UTF-8">
+<input type="hidden" name="session_guid" value="<?=$GLOBALS['session_guid']?>">
+<p>Beschikbaarheid docent <?= db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']}")?> in <?=$weken?>.
+</form>
 
 <form method="POST" accept-charset="UTF-8" action="do_avail.php?session_guid=<?=$session_guid?>">
 <div class="tablemarkup"><?  db_dump_result($rooster); ?></div>
-<input type="hidden" name="week" value="<?=$default_week?>">
+<input type="hidden" name="week_id" value="<?=$week_id?>">
 <input type="hidden" name="ppl_id" value="<?=$GLOBALS['session_state']['ppl_id']?>">
 <input type="submit" value="Opslaan">
 </form>
@@ -94,7 +117,28 @@ EOQ
 
 function do_student() {
 	global $voxdb, $session_guid;
-	$default_week = db_single_field("SELECT config_value FROM config WHERE config_key = 'DEFAULT_WEEK_DOC'");
+
+	if (isset($_GET['week_id'])) {
+		$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE week_id = ? AND status_lln = 1", $_GET['week_id']);
+		if (!$week_id) fatal("week niet toegankelijk voor leerlingen");
+	} else {
+		$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE status_lln = 1 ORDER BY time_year DESC, time_week DESC");
+	}
+
+	if (!$week_id) { 
+		html_start();?>
+Geen lesweken toegankelijk voor leerlingen op dit moment.
+<? 		html_end();
+	      	return;
+	}	
+
+	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
+
+	$weken = db_single_field(<<<EOQ
+SELECT CONCAT('<select onchange="this.form.submit()" name="week_id">', GROUP_CONCAT(CONCAT('<option', IF(week_id = $week_id, ' selected', ''), ' value="', week_id, '">', time_year, 'wk', LPAD(time_week, 2, '0'), '</option>')), '</select>') FROM $voxdb.weken WHERE status_lln
+EOQ
+);
+	//$default_week = db_single_field("SELECT config_value FROM config WHERE config_key = 'DEFAULT_WEEK_DOC'");
 
 	$uren = db_query(<<<EOQ
 SELECT * FROM $voxdb.time WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?
@@ -184,13 +228,17 @@ SELECT ppl_login docent$select
 FROM $voxdb.ppl
 $join
 WHERE ppl_type = 'personeel' AND ( $where )
+ORDER BY docent
 EOQ
 );
 	html_start();?>
-<p>Keuzes leerling <?= db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']}")?> in <?=$default_week?>.
+<form method="GET" accept-charset="UTF-8">
+<input type="hidden" name="session_guid" value="<?=$GLOBALS['session_guid']?>">
+<p>Keuzes leerling <?= db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']}")?> in <?=$weken?>.
+</form>
 <form method="POST" accept-charset="UTF-8" action="do_claim.php?session_guid=<?=$session_guid?>">
 <div class="tablemarkup"><?  db_dump_result($rooster); ?></div>
-<input type="hidden" name="week" value="<?=$default_week?>">
+<input type="hidden" name="week_id" value="<?=$week_id?>">
 <input type="hidden" name="ppl_id" value="<?=$GLOBALS['session_state']['ppl_id']?>">
 <input type="submit" value="Opslaan">
 </form>
