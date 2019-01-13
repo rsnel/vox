@@ -34,7 +34,7 @@ function do_staff() {
 
 	if (!$week_id) {
 		html_start(); ?>
-Geen lesweken toegankelijk voor docenten op dit moment.
+Geen lesweken toegankelijk voor docenten om inschrijvingen in te doen op dit moment.
 <? 		html_end();
 	       	return;
 	}	
@@ -127,7 +127,7 @@ function do_student() {
 
 	if (!$week_id) { 
 		html_start();?>
-Geen lesweken toegankelijk voor leerlingen op dit moment.
+Geen lesweken toegankelijk om inschrijvingen in te doen voor leerlingen op dit moment.
 <? 		html_end();
 	      	return;
 	}	

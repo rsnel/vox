@@ -34,7 +34,7 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 <? if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
 <? } ?>
-<? if (check_staff() && !preg_match("/niet_ingeschreven.php/", $_SERVER['PHP_SELF'])) { ?>
+<? if (check_staff_rights() && !preg_match("/niet_ingeschreven.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="niet_ingeschreven.php?session_guid=<?=$GLOBALS['session_guid']?>">niet ingeschreven</a></li>
 <? } ?>
 <? if (!preg_match("/index.php/", $_SERVER['PHP_SELF'])) { ?>

@@ -14,11 +14,23 @@ EOQ
 if (!isset($_POST['ppl2tag'])) $_POST['ppl2tag'] = array();
 else if (!is_array($_POST['ppl2tag'])) fatal("impossible");
 
-//print_r($_POST);
+if (!isset($_POST['betreft'])) $_POST['betreft'] = array();
+else if (!is_array($_POST['betreft'])) fatal("impossible");
 
+if (!isset($_POST['filter'])) $_POST['filter'] = array();
+else if (!is_array($_POST['filter'])) fatal("impossible");
+
+//print_r($_POST);
 //print_r($res);
 
+$qstring = '';
+foreach ($_POST['filter'] as $tag_id) {
+	$qstring .= '&filter[]='.$tag_id;
+}
+//echo($qstring);
+//exit;
 foreach ($res as $ppltag => $coupled) {
+	if (!in_array(explode('-', $ppltag)[0], $_POST['betreft'])) continue;
 	if ($coupled && !in_array($ppltag, $_POST['ppl2tag'])) {
 		db_exec("DELETE FROM $voxdb.ppl2tag WHERE ppl2tag_id = $coupled");
 //		echo("decouple! $ppltag\n");
@@ -28,6 +40,6 @@ foreach ($res as $ppltag => $coupled) {
 	}
 }
 
-header('Location: tags.php?session_guid='.$session_guid.'&type='.$_POST['type']);
+header('Location: tags.php?session_guid='.$session_guid.'&type='.$_POST['type'].$qstring);
 
 ?>
