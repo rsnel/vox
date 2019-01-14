@@ -5,7 +5,7 @@ enforce_staff();
 header('Content-type: text/plain');
 
 if ($GLOBALS['session_state']['ppl_id'] != $_POST['ppl_id']) fatal("impersonator");
-print_r($_POST);
+//print_r($_POST);
 
 //exit;
 

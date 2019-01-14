@@ -28,7 +28,7 @@ GROUP BY time_id, avail.ppl_id
 EOQ
 , $_POST['week_id'], $_POST['ppl_id']);
 
-print_r($ins);
+//print_r($ins);
 
 if (!isset($_POST['lock']) || !is_array($_POST['lock'])) $_POST['lock'] = array ();
 
@@ -40,7 +40,7 @@ while ($row = mysqli_fetch_assoc($uren)) {
 		if (isset($ins[$idx])) {
 			if ($ins[$idx]['ppl_id'] == $ppl_id) {
 				// geen wijziging
-				echo("time $idx OK\n");
+				//echo("time $idx OK\n");
 				goto ending;
 			}
 			// mag niet worden verwijderd
@@ -50,7 +50,7 @@ while ($row = mysqli_fetch_assoc($uren)) {
 			}
 			$verwijder = $ins[$idx]['ppl_id'];
 		}
-		echo("te verwijderen $verwijder\n");
+		//echo("te verwijderen $verwijder\n");
 		if ($ppl_id) {
 			$avails = db_single_row("SELECT GROUP_CONCAT(avail_id) avail_ids, MIN(capacity) capacity FROM $voxdb.avail WHERE time_id = ? AND ppl_id = ?", $row['time_id'], $ppl_id);
 			//print_r($avails);
@@ -61,7 +61,7 @@ while ($row = mysqli_fetch_assoc($uren)) {
 			// check capacity
 
 			$count = db_single_field("SELECT COUNT(DISTINCT claim.ppl_id) FROM $voxdb.claim WHERE avail_id IN ( {$avails['avail_ids']} )");
-			echo("Count = $count\n");
+			//echo("Count = $count\n");
 
 			if ($count > $avails['capacity'] && !check_su()) {
 				$GLOBALS['session_state']['error_msg'] .= " $idx kan niet worden aangepast wegens te lage capaciteit";
