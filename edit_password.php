@@ -9,7 +9,7 @@ html_start(); ?>
 <? if (!check_su()) { ?>
 <br>Huidig wachtwoord: <input type="password" name="old_password">
 <? } else { ?>
-<br>vanwege 'Switch User' is niet niet nodig het oude wachtwoord op te geven
+<br>vanwege 'Switch User' is het niet nodig het oude wachtwoord op te geven
 <input type="hidden" name="old_password" value="">
 <? } ?>
 <br>Nieuw wachtwoord: <input type="password" name="new_password">
