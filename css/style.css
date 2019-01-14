@@ -12,3 +12,17 @@ div.tablemarkup > table * td, div.tablemarkup > table * th {
         padding-right: 1.1mm;
         border: 1px solid black
 }
+#footer {
+	font-size: 8px;
+	border-top: 2px solid #ccc;
+	border-bottom: 2px solid #ccc;
+	margin-top: 15px;
+	margin-bottom: 5px;
+	padding-left: 93px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	height: 31px;
+	background-image: url(../images/agplv3-88x31.png);
+	background-repeat: no-repeat;
+	background-position: center left;
+}

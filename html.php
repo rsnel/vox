@@ -8,6 +8,15 @@ function html_start() {
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="css/style.css">
+<link rel="apple-touch-icon" sizes="120x120" href="/vox/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/vox/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/vox/images/favicon-16x16.png">
+<link rel="manifest" href="/vox/images/site.webmanifest">
+<link rel="mask-icon" href="/vox/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/vox/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/vox/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
 <title>VOX inschrijfsysteem</title>
 </head>
 <body>
@@ -69,7 +78,11 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 }
 
 function html_end() { ?>
-<div id="footer"></div>
+<div id="footer">
+VOX Inschrijfsysteem &copy; 2018-2019 Rik Snel &lt;rik@snel.it&gt;.<br>
+Released as <a href="http://www.gnu.org/philosophy/free-sw.html">free software</a> without warranties under <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html">GNU AGPL v3</a>.<br>
+Sourcecode: git clone <a href="https://github.com/rsnel/vox/">https://github.com/rsnel/vox/</a>
+</div>
 </body>
 </html>
 <?  }
