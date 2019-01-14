@@ -41,7 +41,7 @@ SELECT tag_name, IF((
 	), 'OK', 'niet OK') ok, COUNT(ppl_id) lln
 -- , CONCAT('<input type="checkbox" checked name="tag_id[]" value="', tag_id, '">') actie
 FROM $voxdb.tag
-JOIN $voxdb.ppl2tag USING (tag_id)
+LEFT JOIN $voxdb.ppl2tag USING (tag_id)
 WHERE tag_type = 'ROOSTERLLN'
 GROUP BY tag_id
 ORDER BY tag_order, tag_name
