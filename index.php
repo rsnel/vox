@@ -109,7 +109,7 @@ EOQ
 
 <p>De maximale capaciteit van een docent staat standaard op 25. Als de maximale capaciteit is bereikt, dan kunnen leerlingen zich niet (meer) inschrijven. Docenten kunnen leerlingen nog wel inschrijven. Als het de bedoeling is dat leerlingen zichzelf niet kunnen inschrijven, dan dient de capaciteit op 0 te staan.
 
-<p>Een disabled checkbox (<input type="checkbox" checked disabled>) betekent dat er leeringen bij jou zijn ingeschreven voor het betreffede vak. Het is pas mogelijk om de beschikbaarheid van de docent uit te zetten als de ingeschreven leerlingen zijn uitgeschreven.
+<p>Een disabled checkbox (<input type="checkbox" checked disabled>) betekent dat er leeringen bij jou zijn ingeschreven voor het betreffende vak. Het is pas mogelijk om de beschikbaarheid van de docent uit te zetten als de ingeschreven leerlingen zijn uitgeschreven.
 
 <? 
 	html_end();
