@@ -18,7 +18,7 @@ EOQ
 , $_POST['week_id']);
 
 $tags = db_all_assoc_rekey(<<<EOQ
-SELECT tag_id, GROUP_CONCAT(ppl2tag.ppl_id) ppl_ids, tag_name, GROUP_CONCAT(DISTINCT avail_id) avail_ids
+SELECT tag_id, GROUP_CONCAT(DISTINCT ppl2tag.ppl_id) ppl_ids, tag_name, GROUP_CONCAT(DISTINCT avail_id) avail_ids
 FROM $voxdb.ppl2tag 
 JOIN $voxdb.tag USING (tag_id)
 JOIN $voxdb.time ON CONCAT(time_day, time_hour) = SUBSTR(tag_name, 1, 3)
