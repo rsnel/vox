@@ -30,7 +30,7 @@ EOQ
 
 $tags = db_query(<<<EOQ
 SELECT tag_name, IF((
-	SELECT time_id
+	SELECT DISTINCT time_id
 	 FROM $voxdb.time
 	JOIN $voxdb.weken USING (time_year, time_week)
 	JOIN $voxdb.avail USING (time_id)
