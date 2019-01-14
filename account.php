@@ -22,6 +22,7 @@ EOQ
 //echo($ret);
 
 html_start(); ?>
+Gebruikers die nog geen wachtwoord hebben zijn automatisch aangevinkt.
 <form action="do_generate_passwords.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
 <? db_dump_result($res, false); ?>
 <input type="submit" value="Genereer wachtwoorden">
