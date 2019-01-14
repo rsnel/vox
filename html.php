@@ -27,13 +27,13 @@ function html_start() {
 if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 ?>
 <li><a href="edit_password.php?session_guid=<?=$GLOBALS['session_guid']?>">wachtwoord wijzigen</a></li>
+<? if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
+<li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
+<? } ?>
 <? } } else { ?>
 <li><form method="POST" action="do_login.php?session_guid=<? echo($GLOBALS['session_guid']); ?>"><input type="text" placeholder="gebruikersnaam" name="username"><input type="password" placeholder="wachtwoord" name="password"><input type="submit" value="login"></form></li>
 <? } ?>
 <!--<li><form method="POST" action="do_new_tab.php?session_guid=<? echo($GLOBALS['session_guid']); ?>&amp;session_log_id=<? echo($GLOBALS['session_state']['session_log_id']); ?>" target="_blank"><input type="submit" value="new tab"></form></li>-->
-<? if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
-<li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
-<? } ?>
 <? if (check_staff_rights() && !preg_match("/niet_ingeschreven.php/", $_SERVER['PHP_SELF'])) { ?>
 <li><a href="niet_ingeschreven.php?session_guid=<?=$GLOBALS['session_guid']?>">niet ingeschreven</a></li>
 <? } ?>
