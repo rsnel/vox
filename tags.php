@@ -73,8 +73,8 @@ Filter:<br>
 }
 foreach ($where as $soort => $stuff) {
 	$stuff = implode(' OR ', $stuff);
-	if ($stuff == '') $stuff = 'TRUE';
-	$where[$soort] = '( '.$stuff.' )';
+	if ($stuff == '') $where[$soort] = 'TRUE';
+	else $where[$soort] = 'ppl_id IN ( SELECT ppl_id FROM '.$voxdb.'.ppl2tag WHERE '.$stuff.' )';
 }
 $where = implode(' AND ', $where);
 
@@ -82,7 +82,7 @@ $res = db_query(<<<EOQ
 SELECT CONCAT(ppl_login, '<input type="hidden" name="betreft[]" value="', ppl_id, '">') login,
 	CONCAT(ppl_forename, ' ', ppl_prefix, ' ', ppl_surname) naam$select
 FROM $voxdb.ppl
-WHERE ppl_type = 'leerling' AND ppl_id IN ( SELECT ppl_id FROM $voxdb.ppl LEFT JOIN $voxdb.ppl2tag USING (ppl_id) WHERE $where )
+WHERE ppl_type = 'leerling' AND $where
 ORDER BY ppl_surname, ppl_forename, ppl_prefix
 EOQ
 );
