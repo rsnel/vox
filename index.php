@@ -156,11 +156,12 @@ EOQ
 	$join2 = '';
 
 	$select3 = '';
+	$join3 = '';
 
 	while ($row = mysqli_fetch_assoc($uren)) {
 		$du = $row['time_day'].$row['time_hour'];
 		$select3 .= <<<EOS
-, CONCAT('<input type="radio"',IF((SELECT claim_id FROM $voxdb.claim JOIN $voxdb.avail USING (avail_id) WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']} LIMIT 1) IS NULL, ' checked', '') ,' name="time-{$row['time_id']}" value="ppl_id-0">') $du
+, CONCAT('<input type="radio"', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)), ' disabled', ''), IF((SELECT claim_id FROM $voxdb.claim JOIN $voxdb.avail USING (avail_id) WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']} LIMIT 1) IS NULL, ' checked', '') ,' name="time-{$row['time_id']}" value="ppl_id-0">') $du
 EOS;
 		if (!check_su()) {
 			$select2 .= <<<EOS
@@ -182,6 +183,17 @@ LEFT JOIN (
 ) AS a$du USING (time_id)
 
 EOJ;
+
+		$join3 .= <<<EOJ
+LEFT JOIN (
+	SELECT time_id, claim_locked
+	FROM $voxdb.claim
+	JOIN $voxdb.avail USING (avail_id)
+	WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}
+) AS a$du USING (time_id)
+
+EOJ;
+
 		$select .= <<<EOS
 , IFNULL(
 	CONCAT(
@@ -204,6 +216,7 @@ LEFT JOIN (
 		SELECT time_id, IFNULL(BIT_OR(claim_locked), 0) locked
 		FROM $voxdb.claim
 		JOIN $voxdb.avail USING (avail_id)
+		WHERE claim.ppl_id = {$GLOBALS['session_state']['ppl_id']}
 		GROUP BY time_id
 	) AS locked USING (time_id)
 	WHERE time_id = {$row['time_id']}
@@ -223,6 +236,8 @@ $join2
 WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = '$default_week'
 UNION
 SELECT '<i>geen</i>' AS `docent`$select3
+FROM $voxdb.time
+$join3
 UNION
 SELECT ppl_login docent$select
 FROM $voxdb.ppl
