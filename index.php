@@ -161,7 +161,7 @@ EOQ
 	while ($row = mysqli_fetch_assoc($uren)) {
 		$du = $row['time_day'].$row['time_hour'];
 		$select3 .= <<<EOS
-, CONCAT('<input type="radio"', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)), ' disabled', ''), IF((SELECT claim_id FROM $voxdb.claim JOIN $voxdb.avail USING (avail_id) WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']} LIMIT 1) IS NULL, ' checked', '') ,' name="time-{$row['time_id']}" value="ppl_id-0">') $du
+, CONCAT('<input type="radio"', IF(BIT_OR(IFNULL(a$du.claim_locked, 0)) AND $not_su, ' disabled', ''), IF((SELECT claim_id FROM $voxdb.claim JOIN $voxdb.avail USING (avail_id) WHERE time_id = {$row['time_id']} AND claim.ppl_id = {$GLOBALS['session_state']['ppl_id']} LIMIT 1) IS NULL, ' checked', '') ,' name="time-{$row['time_id']}" value="ppl_id-0">') $du
 EOS;
 		if (!check_su()) {
 			$select2 .= <<<EOS
