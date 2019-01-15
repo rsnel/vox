@@ -38,9 +38,15 @@ EOQ
 
 $error = '';
 if (!isset($_GET['q']) || $_GET['q'] == '') {
-	$urlencodeq = '';
-	$target = 'de hele school';
-	$where = '';
+	if (check_student()) {
+		$target = db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id']);
+		$urlencodeq = urlencode($target);
+		$where = ' AND claim.ppl_id = '.$GLOBALS['session_state']['ppl_id'];
+	} else {
+		$urlencodeq = '';
+		$target = 'de hele school';
+		$where = '';
+	}
 } else {
 	$urlencodeq = urlencode($_GET['q']);
 	$target_info = db_single_row("SELECT ppl_id, ppl_login, ppl_type FROM $voxdb.ppl WHERE ppl_login = ?", $_GET['q']);
