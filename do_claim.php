@@ -88,7 +88,9 @@ while ($row = mysqli_fetch_assoc($uren)) {
 
 }
 
-$GLOBALS['session_state']['success_msg'] = 'Keuzes opgeslagen';
+if (!$GLOBALS['session_state']['error_msg']) {
+	$GLOBALS['session_state']['success_msg'] = 'Keuzes opgeslagen';
+}
 
 header('Location: index.php?session_guid='.$session_guid.'&week_id='.$_POST['week_id']);
 
