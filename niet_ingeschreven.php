@@ -14,7 +14,7 @@ while ($assoc = mysqli_fetch_assoc($weken)) {
 }
  */
 
-enforce_staff();
+enforce_staff_rights();
 
 
 if (isset($_GET['week_id'])) {
