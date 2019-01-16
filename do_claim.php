@@ -45,7 +45,7 @@ while ($row = mysqli_fetch_assoc($uren)) {
 			}
 			// mag niet worden verwijderd
 			if (!check_su() && $ins[$idx]['locked'] == 1) {
-				$GLOBALS['session_state']['error_msg'] .= " $idx kan niet worden aangepast wegens lock";
+				$GLOBALS['session_state']['error_msg'] .= " {$row['time_day']}{$row['time_hour']} kan niet worden aangepast wegens lock";
 				goto ending;
 			}
 			$verwijder = $ins[$idx]['ppl_id'];
@@ -64,7 +64,7 @@ while ($row = mysqli_fetch_assoc($uren)) {
 			//echo("Count = $count\n");
 
 			if ($count > $avails['capacity'] && !check_su()) {
-				$GLOBALS['session_state']['error_msg'] .= " $idx kan niet worden aangepast wegens te lage capaciteit";
+				$GLOBALS['session_state']['error_msg'] .= " {$row['time_day']}{$row['time_hour']} kan niet worden aangepast wegens te lage capaciteit";
 				// we veranderen de waarde van 'verwijder' zodat onze nieuwe toevoegingen worden verwijderd
 				$verwijder = $ppl_id;
 			}
