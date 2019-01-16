@@ -64,7 +64,7 @@ if (!isset($_GET['q']) || $_GET['q'] == '') {
 
 
 $rooster = db_query(<<<EOS
-SELECT time_hour uur, time_day-1 dag, CONCAT(ppl_login, '/', GROUP_CONCAT(DISTINCT subj_abbrev), ' (<a href="klassenlijst.php?session_guid=$session_guid&amp;time_id=', time_id, '&amp;ppl_id=', avail.ppl_id, '&amp;week_id=$week_id&amp;q=$urlencodeq">', COUNT(DISTINCT claim.ppl_id), '</a>)') 'doc/vak'
+SELECT time_hour uur, time_day-1 dag, CONCAT(ppl_login, '/', GROUP_CONCAT(DISTINCT subj_abbrev ORDER BY subj_abbrev), ' (<a href="klassenlijst.php?session_guid=$session_guid&amp;time_id=', time_id, '&amp;ppl_id=', avail.ppl_id, '&amp;week_id=$week_id&amp;q=$urlencodeq">', COUNT(DISTINCT claim.ppl_id), '</a>)') 'doc/vak'
 FROM $voxdb.weken
 JOIN $voxdb.time USING (time_year, time_week)
 JOIN $voxdb.avail USING (time_id)
