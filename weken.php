@@ -56,7 +56,7 @@ foreach ($options as $week_id => $week) { ?>
 <h3>Bestaande weken</h3>
 <form action="do_weken.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
 <? db_dump_result($weken, false); ?>
-<input type="submit" value="Vinkjes doc/lln opslaan">
+<input type="submit" value="Vinkjes opslaan">
 </form>
 
 <p>
