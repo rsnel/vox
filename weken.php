@@ -45,7 +45,7 @@ EOQ
 
 html_start(); ?>
 
-<h3>Nieuwe week maken (met lesuren gebaseerd op bestaande week</h3>
+<h3>Nieuwe week maken (met lesuren gebaseerd op bestaande week)</h3>
 <form action="do_new_week.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
 Maak nieuwe week <?=$select?>wk<?=$select_wk?> en baseer de lesuren op <select name="basis_week_id"><?
 foreach ($options as $week_id => $week) { ?>
