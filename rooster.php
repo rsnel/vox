@@ -38,7 +38,7 @@ EOQ
 
 $error = '';
 if (!isset($_GET['q']) || $_GET['q'] == '') {
-	if (check_student()) {
+	if (check_student() && !isset($_GET['q'])) {
 		$target = db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id']);
 		$urlencodeq = urlencode($target);
 		$where = ' AND claim.ppl_id = '.$GLOBALS['session_state']['ppl_id'];
