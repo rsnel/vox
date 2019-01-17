@@ -33,12 +33,12 @@ function html_start() {
 <? if (check_su()) { ?><li><form method="POST" action="do_su.php?session_guid=<? echo($GLOBALS['session_guid']); ?>">suid <?=db_single_field("SELECT ppl_login FROM $voxdb.ppl WHERE ppl_id = ?", $GLOBALS['session_state']['ppl_id'])?><input type="hidden" name="username" value="<?=$GLOBALS['session_state']['auth_user']?>"> <input type="submit" value="switch terug"></form></li>
 <? } else if (check_staff()) { ?><li><form method="POST" action="do_su.php?session_guid=<? echo($GLOBALS['session_guid']); ?>"><input type="text" name="username" value=""><input type="submit" value="switch user"></form>
 </li><? }
+if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
+<li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
+<? }
 if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 ?>
 <li><a href="edit_password.php?session_guid=<?=$GLOBALS['session_guid']?>">wijzig ww.</a></li>
-<? if (!preg_match("/rooster.php/", $_SERVER['PHP_SELF']) && !preg_match("/klassenlijst.php/", $_SERVER['PHP_SELF'])) { ?>
-<li><a href="rooster.php?session_guid=<?=$GLOBALS['session_guid']?>">rooster</a></li>
-<? } ?>
 <? } } else { ?>
 <li><form method="POST" action="do_login.php?session_guid=<? echo($GLOBALS['session_guid']); ?>"><input type="text" placeholder="gebruikersnaam" name="username"><input type="password" placeholder="wachtwoord" name="password"><input type="submit" value="login"></form></li>
 <? } ?>
