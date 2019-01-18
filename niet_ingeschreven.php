@@ -77,7 +77,10 @@ $uren = explode(',', $uren);
 html_start();
 
 ?>
+<form method="GET" accept-charset="UTF-8">
+<input type="hidden" name="session_guid" value="0db282dd8a9dc70e1b0f88105dcc5958bcc39e92aaef5fd6541d5e1f636e9840">
 <p>Niet ingeschreven leerlingen in <?=$weken?>.
+</form>
 
 <? $row = mysqli_fetch_assoc($rooster); ?>
 <div class="tablemarkup">
