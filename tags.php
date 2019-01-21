@@ -35,9 +35,9 @@ $select = '';
 //print_r($tags);
 
 foreach ($tags as $tag_id => $tag_name) {
-	$tag_col = implode('<br>', explode('-', $tag_name));
+	$tag_col = implode('<br>', explode('-', $tag_name)).'<br><input class="selectcolumn" type="checkbox" id="'.$tag_name.'">';
 	$select .= <<<EOS
-, CONCAT('<input type="checkbox" name="ppl2tag[]"', IF((SELECT ppl2tag_id FROM $voxdb.ppl2tag WHERE ppl2tag.ppl_id = ppl.ppl_id AND ppl2tag.tag_id = $tag_id), ' checked', ''),' value="', ppl_id, '-$tag_id">') '$tag_col'
+, CONCAT('<input class="$tag_name" type="checkbox" name="ppl2tag[]"', IF((SELECT ppl2tag_id FROM $voxdb.ppl2tag WHERE ppl2tag.ppl_id = ppl.ppl_id AND ppl2tag.tag_id = $tag_id), ' checked', ''),' value="', ppl_id, '-$tag_id">') '$tag_col'
 EOS;
 }
 
@@ -45,7 +45,19 @@ EOS;
 //print_r($output);
 //echo($ret);
 
-html_start();
+html_start(<<<EOS
+$(function () {
+	$('.selectcolumn').click(function () {
+		var id = $(this).attr('id');
+		if ($(this).is(":checked")) {
+			$('.'+id).attr('checked', true);
+		} else {
+			$('.'+id).attr('checked', false);
+		}
+	});
+});
+EOS
+);
 $where = array();
 $qfilter = array();
 ?>
