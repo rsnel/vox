@@ -1,6 +1,6 @@
 <?
 
-function html_start() {
+function html_start($script = '') {
 	global $voxdb;
 ?>
 <!DOCTYPE html>
@@ -14,6 +14,14 @@ function html_start() {
 <link rel="manifest" href="/vox/images/site.webmanifest">
 <link rel="mask-icon" href="/vox/images/safari-pinned-tab.svg" color="#5bbad5">
 <link rel="shortcut icon" href="/vox/images/favicon.ico">
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<? if ($script) { ?>
+<script type="text/javascript">
+//<![CDATA[
+<?=$script?>
+//]]>
+</script>
+<? } ?>
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="msapplication-config" content="/vox/images/browserconfig.xml">
 <meta name="theme-color" content="#ffffff">
