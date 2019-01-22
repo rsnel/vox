@@ -28,6 +28,8 @@ function html_start($script = '') {
 <title>VOX inschrijfsysteem</title>
 </head>
 <body>
+<div class="flex-wrapper">
+<div class="container">
 <ul class="debug">
 <li id="session_log_id">session_log_id=<? echo($GLOBALS['session_state']['session_log_id']) ?></li>
 <li id="session_id">session_id=<? echo($GLOBALS['session_id']) ?></li>
@@ -87,6 +89,7 @@ if (!preg_match("/edit_password.php/", $_SERVER['PHP_SELF'])) {
 }
 
 function html_end() { ?>
+</div>
 </div>
 <div id="footer">
 VOX Inschrijfsysteem &copy; 2018-2019 Rik Snel &lt;rik@snel.it&gt;.<br>

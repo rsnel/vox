@@ -1,3 +1,9 @@
+.flex-wrapper {
+  display: flex;
+  min-height: 98vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
 .debug {
 	display: none;
 }
