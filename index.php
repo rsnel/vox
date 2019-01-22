@@ -1,6 +1,7 @@
 <?
 require('system.php');
 require('html.php');
+require('common.php');
 
 /*
 $weken = db_query(<<<EOQ
@@ -41,10 +42,7 @@ Geen lesweken toegankelijk voor docenten om inschrijvingen in te doen op dit mom
 
 	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
 
-	$weken = db_single_field(<<<EOQ
-SELECT CONCAT('<select onchange="this.form.submit()" name="week_id">', GROUP_CONCAT(CONCAT('<option', IF(week_id = $week_id, ' selected', ''), ' value="', week_id, '">', time_year, 'wk', LPAD(time_week, 2, '0'), '</option>')), '</select>') FROM $voxdb.weken WHERE status_doc
-EOQ
-);
+	$weken = generate_weken_select($week_id, 'status_doc');
 
 	$uren = db_query(<<<EOQ
 SELECT * FROM $voxdb.time WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?
@@ -134,11 +132,7 @@ Geen lesweken toegankelijk om inschrijvingen in te doen voor leerlingen op dit m
 
 	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
 
-	$weken = db_single_field(<<<EOQ
-SELECT CONCAT('<select onchange="this.form.submit()" name="week_id">', GROUP_CONCAT(CONCAT('<option', IF(week_id = $week_id, ' selected', ''), ' value="', week_id, '">', time_year, 'wk', LPAD(time_week, 2, '0'), '</option>')), '</select>') FROM $voxdb.weken WHERE status_lln
-EOQ
-);
-	//$default_week = db_single_field("SELECT config_value FROM config WHERE config_key = 'DEFAULT_WEEK_DOC'");
+	$weken = generate_weken_select($week_id, 'status_lln');
 
 	$uren = db_query(<<<EOQ
 SELECT * FROM $voxdb.time WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = ?

@@ -1,6 +1,7 @@
 <?
 require('system.php');
 require('html.php');
+require('common.php');
 
 /*
 $weken = db_query(<<<EOQ
@@ -31,10 +32,7 @@ Geen lesweken zichtbaar in rooster op dit moment.
 
 $default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
 
-$weken = db_single_field(<<<EOQ
-SELECT CONCAT('<select onchange="this.form.submit()" name="week_id">', GROUP_CONCAT(CONCAT('<option', IF(week_id = $week_id, ' selected', ''), ' value="', week_id, '">', time_year, 'wk', LPAD(time_week, 2, '0'), '</option>')), '</select>') FROM $voxdb.weken WHERE rooster_zichtbaar
-EOQ
-);
+$weken = generate_weken_select($week_id, 'rooster_zichtbaar');
 
 $rooster = db_query(<<<EOQ
 SELECT time_hour uur, time_day-1 dag, CONCAT(ppl_forename, ' ', ppl_prefix, ' ', ppl_surname, ' (', ppl_login, ')') 'doc/vak'
