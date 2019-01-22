@@ -114,12 +114,22 @@ default:
 }
 
 if ($res === true) {
-	$GLOBALS['session_state']['auth_user'] = htmlenc($_POST['username']);
-	//$password_hash = db_single_field("SELECT password_hash FROM log_passwords JOIN log ON log.foreign_id = log_password_id LEFT JOIN log AS log_next ON log_next.prev_log_id = log.log_id WHERE log_next.log_id IS NULL AND log_passwords.auth_user = ?", $_POST['username']);
+	$auth_user = htmlenc($_POST['username']);
+	$ppl_id = db_single_field("SELECT ppl_id FROM $voxdb.ppl WHERE ppl_login = ?", $auth_user);
+	if (!$ppl_id) {
+		$GLOBALS['session_state']['error_msg'] = 'Gebruiker is onbekend in '.$voxdb.'.ppl. Neem contact op met de beheerder als dat niet klopt.';
+		header('Location: '.$GLOBALS['session_state']['request_uri']);
+		exit;
+		//fatal('gebruiker '.htmlenc($_POST['username']).' is onbekend in '.$voxdb.'.ppl, vraag de beheerder');
+	}
 
-	$password_hash = db_single_field("SELECT password_hash FROM passwords WHERE auth_user = ?", $_POST['username']);
-	$ppl_id = db_single_field("SELECT ppl_id FROM $voxdb.ppl WHERE ppl_login = ?", $GLOBALS['session_state']['auth_user']);
-	if (!$ppl_id) fatal('gebruiker '.htmlenc($_POST['username']).' is onbekend in '.$voxdb.'.ppl, vraag de beheerder');
+	$ppl_active = db_single_field("SELECT ppl_active FROM $voxdb.ppl WHERE ppl_login = ?", $auth_user);
+	if (!$ppl_active) {
+		$GLOBALS['session_state']['error_msg'] = 'Gebruiker is gedeactiveerd. Neem contact op met de beheerder als dat niet klopt.';
+		header('Location: '.$GLOBALS['session_state']['request_uri']);
+		exit;
+	}
+	$GLOBALS['session_state']['auth_user'] = $auth_user;
 	$GLOBALS['session_state']['ppl_id'] = $ppl_id;
 	if ($auth['method'] != 'Local' && !ext_check_local($_POST['username'], $_POST['password'])) 
 		upsert_password($_POST['username'], $_POST['password']);
