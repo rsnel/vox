@@ -12,9 +12,11 @@ if (isset($_GET['week_id'])) {
 	$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE rooster_zichtbaar= 1 ORDER BY time_year DESC, time_week DESC");
 }
 
-if (!$week_id) { ?>
+if (!$week_id) {
+	html_start(); ?>
 Geen lesweken zichtbaar in rooster op dit moment.
-<? 		 exit;
+<?	html_end();
+	exit;
 }	
 
 $default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
