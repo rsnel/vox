@@ -1,8 +1,13 @@
 .flex-wrapper {
+  margin-left: 1ex;
+  margin-right: 1ex;
   display: flex;
-  min-height: 98vh;
+  min-height: 100vh;
   flex-direction: column;
   justify-content: space-between;
+}
+body {
+	margin: 0;
 }
 .debug {
 	display: none;
