@@ -92,9 +92,14 @@ function html_end() { ?>
 </div>
 </div>
 <div id="footer">
+<div id="footerlogo">
+<img src="images/AGPLv3_Logo.svg">
+</div>
+<div id="footertext">
 VOX Inschrijfsysteem &copy; 2018-2019 Rik Snel &lt;rik@snel.it&gt;.<br>
 Released as <a href="http://www.gnu.org/philosophy/free-sw.html">free software</a> without warranties under <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html">GNU AGPL v3</a>.<br>
 Sourcecode: git clone <a href="https://github.com/rsnel/vox/">https://github.com/rsnel/vox/</a>
+</div>
 </div>
 </body>
 </html>
