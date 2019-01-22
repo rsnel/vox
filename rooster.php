@@ -90,7 +90,7 @@ html_start();
 <form method="GET" accept-charset="UTF-8">
 <input type="hidden" name="session_guid" value="<?=$GLOBALS['session_guid']?>">
 <p>Rooster in <?=$weken?> van <?=$target?>.
-<input type="submit" value="Zoek"><input type="text" name="q" placeholder="llnr of docent"><?=$error?>
+<input type="submit" value="Zoek"><input type="text" name="q" placeholder="llnr of docent" autofocus><?=$error?>
 </form>
 
 <? $row = mysqli_fetch_assoc($rooster); ?>
