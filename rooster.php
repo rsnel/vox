@@ -3,20 +3,7 @@ require('system.php');
 require('html.php');
 require('common.php');
 
-/*
-$weken = db_query(<<<EOQ
-SELECT DISTINCT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) week FROM $voxdb.time
-EOQ
-);
-
-$options = array();
-while ($assoc = mysqli_fetch_assoc($weken)) {
-	print_r($assoc);
-}
- */
-
 enforce_logged_in();
-
 
 if (isset($_GET['week_id'])) {
 	$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE week_id = ? AND rooster_zichtbaar= 1", $_GET['week_id']);

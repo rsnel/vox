@@ -3,18 +3,6 @@ require('system.php');
 require('html.php');
 require('common.php');
 
-/*
-$weken = db_query(<<<EOQ
-SELECT DISTINCT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) week FROM $voxdb.time
-EOQ
-);
-
-$options = array();
-while ($assoc = mysqli_fetch_assoc($weken)) {
-	print_r($assoc);
-}
- */
-
 if (!check_logged_in()) {
 	html_start(); ?>
 Wachtwoord vergeten? Zoek een docent als je leerling bent en zoek een beheerder als je docent bent.
