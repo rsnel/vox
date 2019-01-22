@@ -1,0 +1,27 @@
+Mogelijk zinvolle extra features:
+
+
+Eenvoudig:
+
+- klas vermelden in 'niet ingeschreven'
+
+Redelijk eenvoudig:
+
+- inschrijvingen toegankelijk maken voor beheerder als het voor
+  de gebruikers dicht zit
+- interface bouwen voor zaken die nu alleen direct in de database kunnen worden geregeld
+- echte datum in rooster/inschrijvingen
+- gedetailleerd overzicht activiteit ingelogde gebruiker
+- autocomplete in switch user en rooster
+
+Mogelijk beren op de weg, goed uitkijken
+
+- ouderaccounts met vrijwel geen administratieve last voor school: ouder maakt
+  account met emailadres en geeft op van wie hij/zij ouder is, leerling keurt
+  aanvraag goed of af, ouders van dezelfde leerling zien elkaars emailadres
+  zodat ze aan de bel kunnen trekken als er een adres tussen staat wat er niet
+  hoort te staan) maar wat moeten ouders kunnen zien / doen ?
+- overzichtelijker inschrijfscherm voor leerlingen; geen opties in beeld waarvoor
+  je niet kunt kiezen, zodat de kolom 'locked' weg kan
+- mogelijk maken om inschrijvingen te maken of te verwijderen op basis van tags
+  in alle omstandigheden (dus niet alleen als er nog geen inschrijvingen zijn)
