@@ -7,6 +7,7 @@
   justify-content: space-between;
 }
 body {
+	text-size: small;
 	margin: 0;
 }
 .debug {
@@ -74,16 +75,18 @@ div.tablemarkup > table * td, div.tablemarkup > table * th {
         font-family: Arial, sans-serif;
         font-weight: bold;
         text-transform: uppercase;
-        margin: 5px 0;
+        margin: 0;
         padding: 0;
         padding-top: 2px;
         list-style-type: none;
         background-color: #eee;
         background-image: url(../images/logo.png);
+	background-size: auto 100%;
         background-repeat: no-repeat;
         background-position: center right;
-        font-size: 14px;
-        height: 40px;
+        font-size: small;
+        height: 5.5ex;
+        line-height: 5.5ex;
         border-top: 0px solid #eee;
         border-bottom: 2px solid #ccc;
 }
@@ -91,7 +94,6 @@ div.tablemarkup > table * td, div.tablemarkup > table * th {
         float: left;
         margin: 0;
         padding: 0 5px;
-        line-height: 40px;
 }
 #menu li a {
         text-decoration: none;
