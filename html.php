@@ -25,6 +25,7 @@ function html_start($script = '') {
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="msapplication-config" content="/vox/images/browserconfig.xml">
 <meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VOX inschrijfsysteem</title>
 </head>
 <body>
