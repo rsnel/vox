@@ -31,7 +31,7 @@ LEFT JOIN (
 	FROM $voxdb.claim
 	JOIN $voxdb.avail USING (avail_id)
 ) AS bla USING (time_id, ppl_id)
-WHERE week_id = $week_id AND ppl_type = 'leerling' AND claim_id IS NULL
+WHERE week_id = $week_id AND ppl_type = 'leerling' AND claim_id IS NULL AND ppl_active = 1
 -- GROUP BY time_id
 ORDER BY uur, dag, ppl_surname, ppl_forename, ppl_prefix
 EOQ
