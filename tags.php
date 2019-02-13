@@ -106,7 +106,7 @@ Soort tags:
 </form>
 <p><form action="do_tags.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
 <?=implode('', $qfilter)?>
-<div class="tablemarkup"><? db_dump_result($res, false); ?></div>
+<div class="tablemarkup table-fixed"><? db_dump_result($res, false); ?></div>
 <input type="hidden" name="type" value="<?=htmlenc($type)?>">
 <input type="submit" value="Opslaan">
 </form>

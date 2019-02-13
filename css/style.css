@@ -107,4 +107,11 @@ div.tablemarkup > table * td, div.tablemarkup > table * th {
         border-bottom: 2px solid #DDD;
         color: #999;
 }
-
+.table-fixed thead th {
+	position: sticky;
+	position: -webkit-sticky;
+	top: 0;
+	z-index: 999;
+	background-color: #fff;
+	color: #000;
+}
