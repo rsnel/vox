@@ -27,6 +27,7 @@ LEFT JOIN (
 	GROUP BY ppl_id
 ) AS tags USING (ppl_id)
 LEFT JOIN passwords ON passwords.auth_user = ppl_login
+WHERE ppl_active = 1
 ORDER BY last_activity DESC, ppl_type, ppl_surname, ppl_forename, ppl_prefix
 EOQ
 );
