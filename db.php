@@ -214,13 +214,14 @@ function db_get_useragent_id($useragent_string) {
 }
 
 function db_dump_result($res, $show_table_names = 0) {
-	echo("<table>\n<tr>");
+	echo("<table>\n<thead>\n<tr>");
 
 	while (($finfo = $res->fetch_field())) {
 		echo('<th>');
 		if ($show_table_names) echo($finfo->table.'<br>');
 		echo($finfo->name.'</th>');
 	}
+	echo("</thead>\n<tbody>\n");
 
 	while (($row = mysqli_fetch_array($res, MYSQLI_NUM))) {
 		echo('<tr>');
@@ -230,6 +231,7 @@ function db_dump_result($res, $show_table_names = 0) {
 		}
 		echo("<tr>\n");
 	}
+	echo("</tbody>\n");
 	echo("</table>\n");
 
 	// reset result, so that it can be traversed again
