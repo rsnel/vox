@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 13, 2019 at 04:04 PM
--- Server version: 10.1.26-MariaDB-0+deb9u1
+-- Generation Time: Mar 11, 2019 at 07:01 AM
+-- Server version: 10.1.37-MariaDB-0+deb9u1
 -- PHP Version: 5.6.33-0+deb8u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -37,6 +37,20 @@ CREATE TABLE `avail` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `avails`
+-- (See below for the actual view)
+--
+CREATE TABLE `avails` (
+`time_id` int(11)
+,`ppl_id` int(11)
+,`capacity` int(11)
+,`subj_abbrevs` text
+,`avail_ids` text
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `claim`
 --
 
@@ -45,6 +59,33 @@ CREATE TABLE `claim` (
   `ppl_id` int(11) NOT NULL,
   `avail_id` int(11) NOT NULL,
   `claim_locked` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `claims`
+-- (See below for the actual view)
+--
+CREATE TABLE `claims` (
+`ppl_id` int(11)
+,`locked` bigint(21) unsigned
+,`ll_ppl_id` int(11)
+,`time_id` int(11)
+,`capacity` int(11)
+,`subj_abbrevs` text
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lok`
+--
+
+CREATE TABLE `lok` (
+  `lok_id` int(11) NOT NULL,
+  `lok_afk` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lok_active` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -59,7 +100,8 @@ CREATE TABLE `ppl` (
   `ppl_forename` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ppl_prefix` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ppl_surname` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ppl_type` enum('leerling','personeel') COLLATE utf8mb4_unicode_ci NOT NULL
+  `ppl_type` enum('leerling','personeel') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ppl_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -72,6 +114,19 @@ CREATE TABLE `ppl2tag` (
   `ppl2tag_id` int(11) NOT NULL,
   `ppl_id` int(11) NOT NULL,
   `tag_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ppl2time2lok`
+--
+
+CREATE TABLE `ppl2time2lok` (
+  `ppl2time2lok_id` int(11) NOT NULL,
+  `ppl_id` int(11) NOT NULL,
+  `time_id` int(11) NOT NULL,
+  `lok_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -95,7 +150,7 @@ CREATE TABLE `subj` (
 CREATE TABLE `tag` (
   `tag_id` int(11) NOT NULL,
   `tag_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tag_type` enum('ROOSTERLLN','LEERJAAR','NIVEAU') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag_type` enum('ROOSTERLLN','LEERJAAR','NIVEAU','TEMP') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ROOSTERLLN',
   `tag_order` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -125,8 +180,27 @@ CREATE TABLE `weken` (
   `time_week` int(11) NOT NULL,
   `status_doc` int(11) NOT NULL DEFAULT '0',
   `status_lln` int(11) NOT NULL DEFAULT '0',
-  `rooster_zichtbaar` int(11) NOT NULL DEFAULT '0'
+  `rooster_zichtbaar` int(11) NOT NULL DEFAULT '0',
+  `week_titel` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `avails`
+--
+DROP TABLE IF EXISTS `avails`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `avails`  AS  select `avail`.`time_id` AS `time_id`,`avail`.`ppl_id` AS `ppl_id`,min(`avail`.`capacity`) AS `capacity`,group_concat(`subj`.`subj_abbrev` order by `subj`.`subj_abbrev` ASC separator ',') AS `subj_abbrevs`,group_concat(`avail`.`avail_id` separator ',') AS `avail_ids` from (`avail` join `subj` on((`avail`.`subj_id` = `subj`.`subj_id`))) where 1 group by `avail`.`time_id`,`avail`.`ppl_id` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `claims`
+--
+DROP TABLE IF EXISTS `claims`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `claims`  AS  select `avails`.`ppl_id` AS `ppl_id`,bit_or(`claim`.`claim_locked`) AS `locked`,`claim`.`ppl_id` AS `ll_ppl_id`,`avails`.`time_id` AS `time_id`,`avails`.`capacity` AS `capacity`,`avails`.`subj_abbrevs` AS `subj_abbrevs` from (`avails` left join `claim` on(find_in_set(`claim`.`avail_id`,`avails`.`avail_ids`))) group by `avails`.`time_id`,`avails`.`ppl_id`,`claim`.`ppl_id` ;
 
 --
 -- Indexes for dumped tables
@@ -150,6 +224,13 @@ ALTER TABLE `claim`
   ADD KEY `avail_id` (`avail_id`);
 
 --
+-- Indexes for table `lok`
+--
+ALTER TABLE `lok`
+  ADD PRIMARY KEY (`lok_id`),
+  ADD UNIQUE KEY `lok_afk` (`lok_afk`);
+
+--
 -- Indexes for table `ppl`
 --
 ALTER TABLE `ppl`
@@ -163,6 +244,16 @@ ALTER TABLE `ppl2tag`
   ADD PRIMARY KEY (`ppl2tag_id`),
   ADD KEY `ppl_id` (`ppl_id`),
   ADD KEY `tag_id` (`tag_id`);
+
+--
+-- Indexes for table `ppl2time2lok`
+--
+ALTER TABLE `ppl2time2lok`
+  ADD PRIMARY KEY (`ppl2time2lok_id`),
+  ADD UNIQUE KEY `ppl_id_2` (`ppl_id`,`time_id`),
+  ADD KEY `ppl_id` (`ppl_id`),
+  ADD KEY `time_id` (`time_id`),
+  ADD KEY `lok_id` (`lok_id`);
 
 --
 -- Indexes for table `subj`
@@ -183,7 +274,7 @@ ALTER TABLE `tag`
 --
 ALTER TABLE `time`
   ADD PRIMARY KEY (`time_id`),
-  ADD KEY `time_year` (`time_year`,`time_week`);
+  ADD UNIQUE KEY `time_year` (`time_year`,`time_week`,`time_day`,`time_hour`);
 
 --
 -- Indexes for table `weken`
@@ -200,42 +291,52 @@ ALTER TABLE `weken`
 -- AUTO_INCREMENT for table `avail`
 --
 ALTER TABLE `avail`
-  MODIFY `avail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2458;
+  MODIFY `avail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3511;
 --
 -- AUTO_INCREMENT for table `claim`
 --
 ALTER TABLE `claim`
-  MODIFY `claim_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=195;
+  MODIFY `claim_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14293;
+--
+-- AUTO_INCREMENT for table `lok`
+--
+ALTER TABLE `lok`
+  MODIFY `lok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `ppl`
 --
 ALTER TABLE `ppl`
-  MODIFY `ppl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
+  MODIFY `ppl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 --
 -- AUTO_INCREMENT for table `ppl2tag`
 --
 ALTER TABLE `ppl2tag`
-  MODIFY `ppl2tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `ppl2tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1260;
+--
+-- AUTO_INCREMENT for table `ppl2time2lok`
+--
+ALTER TABLE `ppl2time2lok`
+  MODIFY `ppl2time2lok_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 --
 -- AUTO_INCREMENT for table `subj`
 --
 ALTER TABLE `subj`
-  MODIFY `subj_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `subj_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT for table `tag`
 --
 ALTER TABLE `tag`
-  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 --
 -- AUTO_INCREMENT for table `time`
 --
 ALTER TABLE `time`
-  MODIFY `time_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `time_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
 --
 -- AUTO_INCREMENT for table `weken`
 --
 ALTER TABLE `weken`
-  MODIFY `week_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `week_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- Constraints for dumped tables
 --
@@ -261,6 +362,14 @@ ALTER TABLE `claim`
 ALTER TABLE `ppl2tag`
   ADD CONSTRAINT `ppl2tag_ibfk_1` FOREIGN KEY (`ppl_id`) REFERENCES `ppl` (`ppl_id`),
   ADD CONSTRAINT `ppl2tag_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`tag_id`);
+
+--
+-- Constraints for table `ppl2time2lok`
+--
+ALTER TABLE `ppl2time2lok`
+  ADD CONSTRAINT `ppl2time2lok_ibfk_1` FOREIGN KEY (`ppl_id`) REFERENCES `ppl` (`ppl_id`),
+  ADD CONSTRAINT `ppl2time2lok_ibfk_2` FOREIGN KEY (`time_id`) REFERENCES `time` (`time_id`),
+  ADD CONSTRAINT `ppl2time2lok_ibfk_3` FOREIGN KEY (`lok_id`) REFERENCES `lok` (`lok_id`);
 
 --
 -- Constraints for table `time`

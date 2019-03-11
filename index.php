@@ -43,6 +43,8 @@ EOQ
 	$select2 = '';
 	$join2 = '';
 
+	$select3 = '';
+
 	while ($row = mysqli_fetch_assoc($uren)) {
 		$du = $row['time_day'].$row['time_hour'];
 		$select2 .= <<<EOS
@@ -52,6 +54,22 @@ EOS;
 LEFT JOIN $voxdb.avail AS a$du ON a$du.time_id = {$row['time_id']} AND a$du.ppl_id = {$GLOBALS['session_state']['ppl_id']}
 
 EOJ;
+		$select3 .= <<<EOS
+, (
+	SELECT CONCAT('<select name="lok-time-{$row['time_id']}"><option value="">-</option>',
+		GROUP_CONCAT(
+			CONCAT('<option', IF(bla11.ppl2time2lok_id, ' selected', ''), ' value="', lok_id, '">', lok_afk, '</option>')
+			SEPARATOR ''),
+		'</select>')
+	FROM $voxdb.lok
+	LEFT JOIN (
+		SELECT ppl2time2lok_id, lok_id
+		FROM $voxdb.ppl2time2lok
+		WHERE ppl_id = {$GLOBALS['session_state']['ppl_id']} AND time_id = {$row['time_id']}
+	) AS bla11 USING (lok_id)
+)
+EOS;
+
 		$select .= <<<EOS
 , IF(c$du.avail_id IS NULL, CONCAT('<input class="avail" id="time-{$row['time_id']}-', subj.subj_id, '" type="checkbox" name="time-{$row['time_id']}-', subj.subj_id, '" value="1"', IF(a$du.avail_id IS NULL, '', ' checked'),'>'), CONCAT('<input type="checkbox" checked disabled><input type="hidden" name="time-{$row['time_id']}-', subj.subj_id, '" value="1">')) $du
 
@@ -71,6 +89,8 @@ SELECT '<b>cap.</b>' vak$select2
 FROM $voxdb.time
 $join2
 WHERE CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) = '$default_week'
+UNION
+SELECT '<b>lok.</b>'$select3
 UNION
 SELECT subj_abbrev vak$select
 FROM $voxdb.subj
