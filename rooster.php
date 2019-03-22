@@ -9,7 +9,7 @@ if (isset($_GET['week_id'])) {
 	$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE week_id = ? AND rooster_zichtbaar= 1", $_GET['week_id']);
 	if (!$week_id) fatal("week niet zichtbaar in rooster");
 } else {
-	$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE rooster_zichtbaar= 1 ORDER BY time_year DESC, time_week DESC");
+	$week_id = db_single_field("SELECT week_id FROM $voxdb.weken WHERE rooster_zichtbaar= 1 ORDER BY time_year ASC, time_week ASC");
 }
 
 if (!$week_id) {
