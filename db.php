@@ -229,7 +229,7 @@ function db_dump_result($res, $show_table_names = 0) {
 			if ($data === NULL) echo('<td><i>NULL</i></td>');
 			else echo('<td>'.$data.'</td>');
 		}
-		echo("<tr>\n");
+		echo("</tr>\n");
 	}
 	echo("</tbody>\n");
 	echo("</table>\n");
