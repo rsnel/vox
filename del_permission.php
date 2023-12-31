@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -17,7 +17,7 @@ EOQ
 
 html_start(); ?>
 <pre>
-<? print_r($res); ?>
+<?php print_r($res); ?>
 </pre>
 <?
 html_end();
