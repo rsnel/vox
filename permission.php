@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -13,14 +13,14 @@ if (isset($_GET['log_id'])) {
 }
 
 html_start(); ?>
-<form action="do_permission.php?session_guid=<? echo($session_guid); ?>" method="POST" accept-charset="UTF-8">
+<form action="do_permission.php?session_guid=<?php echo($session_guid); ?>" method="POST" accept-charset="UTF-8">
 <input type="text" name="auth_user" value="<?=$res['auth_user']?>">
 <input type="text" name="permission" value="<?=$res['permission']?>">
 <input type="submit" name="submit" value="opslaan">
-<? if (isset($_GET['log_id'])) { ?>
+<?php if (isset($_GET['log_id'])) { ?>
 <input type="hidden" name="log_id" value="<?=$_GET['log_id']?>">
 <input type="submit" name="submit" value="verwijder">
-<? } ?>
+<?php } ?>
 </form>
-<? html_end();
+<?php html_end();
 ?>
