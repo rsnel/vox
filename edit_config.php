@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -13,14 +13,14 @@ if (isset($_GET['log_id'])) {
 }
 
 html_start(); ?>
-<form action="do_config.php?session_guid=<? echo($session_guid); ?>" method="POST" accept-charset="UTF-8">
+<form action="do_config.php?session_guid=<?php echo($session_guid); ?>" method="POST" accept-charset="UTF-8">
 <input type="text" name="config_key" value="<?=$res['config_key']?>">
 <input type="text" name="config_value" value="<?=$res['config_value']?>">
 <input type="submit" name="submit" value="opslaan">
-<? if (isset($_GET['log_id'])) { ?>
+<?php if (isset($_GET['log_id'])) { ?>
 <input type="hidden" name="log_id" value="<?=$_GET['log_id']?>">
 <input type="submit" name="submit" value="verwijder">
-<? } ?>
+<?php } ?>
 </form>
-<? html_end();
+<?php html_end();
 ?>
