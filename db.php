@@ -1,9 +1,11 @@
-<?  
+<?php
 
+// kijk of $mysqli_info de verwachte waardes heeft 'good practice
 if (!checksetarray($mysqli_info, array ('host', 'username', 'passwd', 'dbname')))
 	fatal('$mysql_info array not defined or complete '.
-			'(host, username, passwd, dbane) in '.$configfile);
+			'(host, username, passwd, dbnane) in '.$configfile);
 
+// kijk of er verbinding gemaakt kan worden met de db, good practice
 if (!($GLOBALS['db'] = mysqli_connect($mysqli_info['host'],
 		$mysqli_info['username'], $mysqli_info['passwd'],
 		$mysqli_info['dbname']))) {
@@ -18,42 +20,48 @@ function fatal_mysqli($function_name) {
 if (!mysqli_set_charset($db, "utf8"))
 	fatal_mysqli('mysqli_set_charset');
 
-// create & execute statement
+// create & execute statement. Voorbereiden SQL statement
 function db_vce_stmt($query, $args) {
-	$refs = array();
+    // Array voor referenties
+    $refs = array();
 
-	if (!($refs[0] = mysqli_prepare($GLOBALS['db'], $query))) fatal_mysqli('msqli_prepare');
-	$refs[1] = '';
-	
-	if (mysqli_stmt_param_count($refs[0]) != count($args))
-		fatal('prepared statement expects '.mysqli_stmt_param_count($refs[0]).' parameter(s) but gets '.count($args).' parameter(s): '.$query);
+    // Voorbereiden van de statement
+    if (!($refs[0] = mysqli_prepare($GLOBALS['db'], $query))) fatal_mysqli('mysqli_prepare');
+    $refs[1] = '';
 
-	// bind parameters if there are any
-	if (count($args)) {
-		foreach ($args as &$arg) {
-			$refs[] = &$arg;
-			$type = gettype($arg);
-			switch ($type) {
-				case 'integer':
-					$refs[1] .= 'i';
-					break;
-				case 'string':
-					$refs[1] .= 's';
-					break;
-				case 'NULL':
-					$refs[1] .= 'i';
-					break;
-				default:
-					fatal('unsupported type ('.$type.') for MySQL query (only integer, NULL and string supported)');
-			}
-		}
+    // Controleren op het juiste aantal parameters in de prepared statement
+    if (mysqli_stmt_param_count($refs[0]) != count($args))
+        fatal('prepared statement expects '.mysqli_stmt_param_count($refs[0]).' parameter(s) but gets '.count($args).' parameter(s): '.$query);
 
-		if (!call_user_func_array('mysqli_stmt_bind_param', $refs)) fatal_mysqli('mysqli_bind_param');
-	}
+    // Parameters binden als die er zijn
+    if (count($args)) {
+        foreach ($args as &$arg) {
+            $refs[] = &$arg;
+            $type = gettype($arg);
+            switch ($type) {
+                case 'integer':
+                    $refs[1] .= 'i';
+                    break;
+                case 'string':
+                    $refs[1] .= 's';
+                    break;
+                case 'NULL':
+                    $refs[1] .= 'i';
+                    break;
+                default:
+                    fatal('unsupported type ('.$type.') for MySQL query (only integer, NULL and string supported)');
+            }
+        }
 
-	if (!mysqli_stmt_execute($refs[0])) fatal_mysqli('mysqli_stmt_execute');
+        // Parameters binden aan de statement
+        if (!call_user_func_array('mysqli_stmt_bind_param', $refs)) fatal_mysqli('mysqli_bind_param');
+    }
 
-	return $refs[0];
+    // Statement uitvoeren
+    if (!mysqli_stmt_execute($refs[0])) fatal_mysqli('mysqli_stmt_execute');
+
+    // Geef de statement terug
+    return $refs[0];
 }
 
 function db_ce_stmt($query) {
@@ -130,14 +138,17 @@ function db_single_row($query) {
 }
 
 function db_vsingle_field($query, $args) {
-	$row = db_vsingle_row($query, $args);
+    // Haal een enkele rij op met db_vsingle_row
+    $row = db_vsingle_row($query, $args);
 
-	if (!is_array($row)) return false; // no row
+    // Controleer of $row een array is
+    if (!is_array($row)) return false; // Geen rij gevonden
 
-	if (!count($row)) fatal('first element of result row array not set?!?!?');
+    // Controleer of de rij-array elementen bevat
+    if (!count($row)) fatal('first element of result row array not set?!?!?');
 
-	// reset returns the first element of the array
-	return reset($row);
+    // Reset geeft het eerste element van de array terug
+    return reset($row);
 }
 
 function db_single_field($query) {
@@ -214,27 +225,41 @@ function db_get_useragent_id($useragent_string) {
 }
 
 function db_dump_result($res, $show_table_names = 0) {
-	echo("<table>\n<thead>\n<tr>");
+    // Begin met het weergeven van de tabel
+    echo("<table>\n<thead>\n<tr>");
 
-	while (($finfo = $res->fetch_field())) {
-		echo('<th>');
-		if ($show_table_names) echo($finfo->table.'<br>');
-		echo($finfo->name.'</th>');
-	}
-	echo("</thead>\n<tbody>\n");
+    // Loop door alle velden in het resultaat
+    while (($finfo = $res->fetch_field())) {
+        // Voeg een kop (header) toe voor elk veld
+        echo('<th>');
+        // Voeg eventueel de tabelnaam toe aan de kop
+        if ($show_table_names) echo($finfo->table.'<br>');
+        // Voeg de naam van het veld toe aan de kop
+        echo($finfo->name.'</th>');
+    }
+    // Sluit de tabelkop af
+    echo("</thead>\n<tbody>\n");
 
-	while (($row = mysqli_fetch_array($res, MYSQLI_NUM))) {
-		echo('<tr>');
-		foreach ($row as $data) {
-			if ($data === NULL) echo('<td><i>NULL</i></td>');
-			else echo('<td>'.$data.'</td>');
-		}
-		echo("</tr>\n");
-	}
-	echo("</tbody>\n");
-	echo("</table>\n");
+    // Loop door alle rijen in het resultaat
+    while (($row = mysqli_fetch_array($res, MYSQLI_NUM))) {
+        // Begin een nieuwe rij
+        echo('<tr>');
+        // Loop door alle gegevens in de rij
+        foreach ($row as $data) {
+            // Als het gegeven NULL is, toon het als cursief "NULL"
+            if ($data === NULL) echo('<td><i>NULL</i></td>');
+            // Anders, toon het gegeven in een cel
+            else echo('<td>'.$data.'</td>');
+        }
+        // Sluit de rij af
+        echo("</tr>\n");
+    }
+    // Sluit de tabelinhoud af
+    echo("</tbody>\n");
+    // Sluit de tabel af
+    echo("</table>\n");
 
-	// reset result, so that it can be traversed again
-	mysqli_field_seek($res, 0);
-	mysqli_data_seek($res, 0);
+    // Reset het resultaat, zodat het opnieuw kan worden doorlopen
+    mysqli_field_seek($res, 0);
+    mysqli_data_seek($res, 0);
 }
