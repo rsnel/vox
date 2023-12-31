@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -59,7 +59,7 @@ html_start();
 <?
 if (!mysqli_num_rows($lln)) { ?>
 <p>Op dit moment zijn er geen leerlingen ingeschreven voor deze docent op dit uur.
-<? } else db_dump_result($lln);
+<?php } else db_dump_result($lln);
 
 html_end();
 
