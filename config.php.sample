@@ -1,4 +1,4 @@
-<?
+<?php
 $mysqli_info = array (
 	'host' => 'localhost',
 	'username' => 'voxapp',

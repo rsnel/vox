@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 enforce_student();
 

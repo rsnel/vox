@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -12,6 +12,6 @@ EOQ
 
 html_start(); ?>
 <a href="edit_config.php?session_guid=<?=$session_guid?>">insert</a>
-<? db_dump_result($res, true);
+<?php db_dump_result($res, true);
 html_end();
 ?>

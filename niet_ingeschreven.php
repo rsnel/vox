@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 require('common.php');
@@ -14,7 +14,7 @@ if (isset($_GET['week_id'])) {
 
 if (!$week_id) { ?>
 Geen lesweken zichtbaar in rooster op dit moment.
-<? 		 exit;
+<?php 		 exit;
 }	
 
 $default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
@@ -67,24 +67,24 @@ html_start();
 <p>Niet ingeschreven leerlingen in <?=$weken?>.
 </form>
 
-<? $row = mysqli_fetch_assoc($rooster); ?>
+<?php $row = mysqli_fetch_assoc($rooster); ?>
 <div class="tablemarkup">
 <table>
 <tr>
 <th></th>
-<? foreach ($dagen as $dag) { ?><th><?=$dagnamen[$dag]?></th>
-<? } ?>
-<? foreach ($uren as $uur) { ?><tr>
+<?php foreach ($dagen as $dag) { ?><th><?=$dagnamen[$dag]?></th>
+<?php } ?>
+<?php foreach ($uren as $uur) { ?><tr>
 <td style="vertical-align: top;"><?=$uur?></td>
-<? foreach ($dagen as $dag) { ?><td style="vertical-align: top;">
-<? while ($row && $row['uur'] == $uur && $row['dag'] == $dag) { ?>
+<?php foreach ($dagen as $dag) { ?><td style="vertical-align: top;">
+<?php while ($row && $row['uur'] == $uur && $row['dag'] == $dag) { ?>
 <?=$row['doc/vak']?><br>
-<? $row = mysqli_fetch_assoc($rooster);
+<?php $row = mysqli_fetch_assoc($rooster);
 } ?>
 </td>
-<? } ?>
+<?php } ?>
 </tr>
-<? } ?>
+<?php } ?>
 </tr>
 </table>
 </div>

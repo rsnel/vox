@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 
 $GLOBALS['session_state']['auth_user'] = NULL;

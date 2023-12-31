@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 //header('Content-type: text/plain');
 //print_r($GLOBALS['session_state']);

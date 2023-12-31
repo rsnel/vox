@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 require('html.php');
 
@@ -64,7 +64,7 @@ $qfilter = array();
 <form method="GET" accept-charset="UTF-8">
 <input type="hidden" name="session_guid" value="<?=$session_guid?>">
 Filter:<br>
-<? foreach ($filter as $soort => $list) {
+<?php foreach ($filter as $soort => $list) {
 	echo($soort);
 	$where[$soort] = array();
 	$tags = explode(',', $list);
@@ -101,14 +101,14 @@ EOQ
 
 ?>
 Soort tags:
-<?=$selecttags?><br>
+<?php echo $selecttags?><br>
 <input type="submit" value="Wijzig filter/soort tag (niet opgeslagen wijzigingen in vinkjes gaan verloren!)">
 </form>
-<p><form action="do_tags.php?session_guid=<?=$session_guid?>" accept-charset="UTF-8" method="POST">
-<?=implode('', $qfilter)?>
-<div class="tablemarkup table-fixed"><? db_dump_result($res, false); ?></div>
-<input type="hidden" name="type" value="<?=htmlenc($type)?>">
+<p><form action="do_tags.php?session_guid=<?php echo $session_guid?>" accept-charset="UTF-8" method="POST">
+<?php echo implode('', $qfilter); ?>
+<div class="tablemarkup table-fixed"><?php db_dump_result($res, false); ?></div>
+<input type="hidden" name="type" value="<?php echo htmlenc($type); ?>">
 <input type="submit" value="Opslaan">
 </form>
-<?  html_end();
+<?php  html_end();
 ?>
