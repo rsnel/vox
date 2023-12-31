@@ -199,7 +199,7 @@ if (isset($voxdb)) {
 }
 
 
-// Controleren op beheerdersrechten
+// Controleren op beheerdersrechten 
 function check_su() {
     global $voxdb;
     if (!check_logged_in()) return false;
