@@ -1,4 +1,4 @@
-<?
+<?php
 require('system.php');
 enforce_logged_in();
 
@@ -41,7 +41,7 @@ upsert_password($username, $_POST['new_password']);
 $GLOBALS['session_state']['success_msg'] = "Wachtwoord aangepast";
 header('Location: index.php?session_guid='.$session_guid);
 
-/*
+
 if ($auth_user == '') {
 	$GLOBALS['session_state']['error_msg'] = 'auth_user mag niet leeg zijn';
 	header('Location: permissions.php?session_guid='.$session_guid);
@@ -102,6 +102,6 @@ default:
 }
 
 header('Location: permissions.php?session_guid='.$session_guid);
- */
+ 
 
 ?>
