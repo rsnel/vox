@@ -28,7 +28,7 @@ Geen lesweken toegankelijk voor docenten om inschrijvingen in te doen op dit mom
 	       	return;
 	}	
 
-	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM voxdb.weken WHERE week_id = $week_id");
+	$default_week = db_single_field("SELECT CONCAT(time_year, 'wk', LPAD(time_week, 2, '0')) FROM $voxdb.weken WHERE week_id = $week_id");
 
 	$weken = generate_weken_select($week_id, 'status_doc');
 
